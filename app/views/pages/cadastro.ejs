@@ -6,7 +6,210 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastre-se</title>
     <link rel="stylesheet" href="css/styleLogin.css">
+    <!-- Simple Notify CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-notify@1.0.4/dist/simple-notify.min.css">
+    <style>
+        .notifyjs-container {
+            z-index: 10000 !important;
+        }
+    </style>
     <script>
+        // Função para validar CNPJ
+        function validateCNPJ(cnpj) {
+            // Remove caracteres não numéricos
+            cnpj = cnpj.replace(/[\D]/g, '');
+            
+            // Verifica se tem 14 dígitos
+            if (cnpj.length !== 14) {
+                return false;
+            }
+            
+            // Elimina CNPJs inválidos conhecidos
+            if (cnpj === '00000000000000' || 
+                cnpj === '11111111111111' || 
+                cnpj === '22222222222222' || 
+                cnpj === '33333333333333' || 
+                cnpj === '44444444444444' || 
+                cnpj === '55555555555555' || 
+                cnpj === '66666666666666' || 
+                cnpj === '77777777777777' || 
+                cnpj === '88888888888888' || 
+                cnpj === '99999999999999') {
+                return false;
+            }
+            
+            // Valida DVs
+            let tamanho = cnpj.length - 2;
+            let numeros = cnpj.substring(0, tamanho);
+            const digitos = cnpj.substring(tamanho);
+            let soma = 0;
+            let pos = tamanho - 7;
+            
+            for (let i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2) pos = 9;
+            }
+            
+            let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado !== parseInt(digitos.charAt(0))) {
+                return false;
+            }
+            
+            tamanho = tamanho + 1;
+            numeros = cnpj.substring(0, tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            
+            for (let i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2) pos = 9;
+            }
+            
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado !== parseInt(digitos.charAt(1))) {
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Função para formatar CNPJ
+        function formatCNPJ(cnpj) {
+            // Remove tudo que não for número
+            cnpj = cnpj.replace(/[\D]/g, '');
+            
+            // Limita a 14 dígitos
+            cnpj = cnpj.substring(0, 14);
+            
+            return cnpj;
+        }
+        
+        // Função para validar e formatar o CNPJ enquanto o usuário digita
+        function handleCNPJInput(input, errorElementId) {
+            const cnpj = input.value;
+            const formattedCNPJ = formatCNPJ(cnpj);
+            input.value = formattedCNPJ; // Atualiza o valor formatado
+            
+            const errorElement = document.getElementById(errorElementId);
+            
+            // Valida o CNPJ apenas se tiver 14 dígitos
+            if (formattedCNPJ.length === 14) {
+                if (!validateCNPJ(formattedCNPJ)) {
+                    if (errorElement) {
+                        errorElement.textContent = 'CNPJ inválido. Por favor, verifique o número.';
+                        errorElement.style.display = 'block';
+                    }
+                    input.setCustomValidity('CNPJ inválido');
+                    return false;
+                } else {
+                    if (errorElement) {
+                        errorElement.style.display = 'none';
+                    }
+                    input.setCustomValidity('');
+                    return true;
+                }
+            } else if (formattedCNPJ.length > 0) {
+                if (errorElement) {
+                    errorElement.textContent = 'CNPJ deve conter 14 dígitos';
+                    errorElement.style.display = 'block';
+                }
+                input.setCustomValidity('CNPJ deve conter 14 dígitos');
+                return false;
+            } else {
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
+                input.setCustomValidity('');
+                return false;
+            }
+        }
+        
+        // Função para validar CPF
+        function validateCPF(cpf) {
+            // Remove caracteres não numéricos
+            cpf = cpf.replace(/\D/g, '');
+            
+            // Verifica se tem 11 dígitos
+            if (cpf.length !== 11) {
+                return false;
+            }
+            
+            // Verifica se todos os dígitos são iguais (CPF inválido)
+            if (/^(\d)\1+$/.test(cpf)) {
+                return false;
+            }
+            
+            // Validação do primeiro dígito verificador
+            let sum = 0;
+            for (let i = 0; i < 9; i++) {
+                sum += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            let remainder = 11 - (sum % 11);
+            let digit1 = remainder >= 10 ? 0 : remainder;
+            
+            // Validação do segundo dígito verificador
+            sum = 0;
+            for (let i = 0; i < 10; i++) {
+                sum += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            remainder = 11 - (sum % 11);
+            let digit2 = remainder >= 10 ? 0 : remainder;
+            
+            // Verifica se os dígitos calculados são iguais aos fornecidos
+            return (parseInt(cpf.charAt(9)) === digit1 && parseInt(cpf.charAt(10)) === digit2);
+        }
+        
+        // Função para formatar CPF
+        function formatCPF(cpf) {
+            // Remove tudo que não for número
+            cpf = cpf.replace(/\D/g, '');
+            
+            // Limita a 11 dígitos
+            cpf = cpf.substring(0, 11);
+            
+            return cpf;
+        }
+        
+        // Função para validar e formatar o CPF enquanto o usuário digita
+        function handleCPFInput(input, errorElementId) {
+            const cpf = input.value;
+            const formattedCPF = formatCPF(cpf);
+            input.value = formattedCPF; // Atualiza o valor formatado
+            
+            const errorElement = document.getElementById(errorElementId);
+            
+            // Valida o CPF apenas se tiver 11 dígitos
+            if (formattedCPF.length === 11) {
+                if (!validateCPF(formattedCPF)) {
+                    if (errorElement) {
+                        errorElement.textContent = 'CPF inválido. Por favor, verifique o número.';
+                        errorElement.style.display = 'block';
+                    }
+                    input.setCustomValidity('CPF inválido');
+                    return false;
+                } else {
+                    if (errorElement) {
+                        errorElement.style.display = 'none';
+                    }
+                    input.setCustomValidity('');
+                    return true;
+                }
+            } else if (formattedCPF.length > 0) {
+                if (errorElement) {
+                    errorElement.textContent = 'CPF deve conter 11 dígitos';
+                    errorElement.style.display = 'block';
+                }
+                input.setCustomValidity('CPF deve conter 11 dígitos');
+                return false;
+            } else {
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
+                input.setCustomValidity('');
+                return false;
+            }
+        }
+        
         // Funções para manipulação de formulários e CEP
         function showForm(formType) {
             //Esconde todos os formulários
@@ -90,12 +293,172 @@
             });
         }
 
+        // Função para validar formulário antes do envio
+        function validateForm(event, cpfFieldId, errorElementId) {
+            const cpfInput = document.getElementById(cpfFieldId);
+            if (cpfInput) {
+                if (!handleCPFInput(cpfInput, errorElementId)) {
+                    event.preventDefault();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Função para validar formulário de academia antes do envio
+        function validateAcademiaForm(event) {
+            const cnpjInput = document.getElementById('cpnjAcademyRegister');
+            if (cnpjInput) {
+                if (!handleCNPJInput(cnpjInput, 'cnpjError')) {
+                    event.preventDefault();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Função para mostrar notificação e redirecionar
+        function showNotificationAndRedirect(isSuccess, message, redirectUrl = '/login') {
+            new Notify({
+                status: isSuccess ? 'success' : 'error',
+                title: isSuccess ? 'Sucesso!' : 'Erro!',
+                text: message,
+                effect: 'fade',
+                speed: 300,
+                showCloseButton: true,
+                autoclose: true,
+                autotimeout: 5000,
+                gap: 20,
+                distance: 20,
+                type: isSuccess ? 1 : 3,
+                position: 'right top'
+            });
+
+            // Redireciona após um atraso para permitir que o usuário veja a mensagem
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 3000);
+        }
+
+        // Função para lidar com o envio do formulário via AJAX
+        async function handleFormSubmit(form, formData, successMessage) {
+            try {
+                // Cria um objeto com todos os campos do formulário
+                const formDataObj = {
+                    fullname: form.querySelector('[name="fullname"]').value,
+                    emailRegister: form.querySelector('[name="emailRegister"]').value,
+                    passwordRegister: form.querySelector('[name="passwordRegister"]').value,
+                    passwordRegisterConfirm: form.querySelector('[name="passwordRegisterConfirm"]').value,
+                    numberRegister: form.querySelector('[name="numberRegister"]').value,
+                    cpfRegister: form.querySelector('[name="cpfRegister"]').value,
+                    cep: form.querySelector('[name="cep"]').value,
+                    rua: form.querySelector('[name="rua"]').value,
+                    bairro: form.querySelector('[name="bairro"]').value,
+                    cidade: form.querySelector('[name="cidade"]').value,
+                    uf: form.querySelector('[name="uf"]').value,
+                    numero: form.querySelector('[name="numero"]').value,
+                    complemento: form.querySelector('[name="complemento"]').value || '',
+                    dataNasc: form.querySelector('[name="dataNasc"]') ? form.querySelector('[name="dataNasc"]').value : '',
+                    plans: form.querySelector('[name="plans"]') ? form.querySelector('[name="plans"]').value : '',
+                    numberCardRegister: form.querySelector('[name="numberCardRegister"]') ? form.querySelector('[name="numberCardRegister"]').value : '',
+                    nameCardRegister: form.querySelector('[name="nameCardRegister"]') ? form.querySelector('[name="nameCardRegister"]').value : '',
+                    validityDate: form.querySelector('[name="validityDate"]') ? form.querySelector('[name="validityDate"]').value : '',
+                    cvvValidation: form.querySelector('[name="cvvValidation"]') ? form.querySelector('[name="cvvValidation"]').value : ''
+                };
+
+                // Remove campos vazios
+                Object.keys(formDataObj).forEach(key => {
+                    if (formDataObj[key] === '') {
+                        delete formDataObj[key];
+                    }
+                });
+
+                let url = form.action;
+                if (form.id === 'formAluno') {
+                    url = '/aluno';
+                } else if (form.id === 'formAcademia') {
+                    url = '/academia';
+                } else if (form.id === 'formProfissional') {
+                    url = '/profissional';
+                }
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formDataObj).toString()
+                });
+
+                // Tenta obter a resposta como JSON, mas lida com respostas de texto também
+                let result;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    result = await response.json();
+                } else {
+                    const text = await response.text();
+                    try {
+                        result = JSON.parse(text);
+                    } catch (e) {
+                        result = { message: text };
+                    }
+                }
+                
+                if (response.ok) {
+                    showNotificationAndRedirect(true, successMessage);
+                } else {
+                    showNotificationAndRedirect(false, result.message || 'Ocorreu um erro ao processar seu cadastro.');
+                }
+            } catch (error) {
+                console.error('Erro ao enviar formulário:', error);
+                showNotificationAndRedirect(false, 'Erro de conexão. Por favor, tente novamente.');
+            }
+        }
+
         // Inicialização da página
         document.addEventListener('DOMContentLoaded', function () {
             // Mostra apenas o formulário de aluno por padrão
             showForm('aluno');
+            
+            // Adiciona validação e envio ao formulário de aluno
+            const alunoForm = document.querySelector('form[action="aluno"]');
+            if (alunoForm) {
+                alunoForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (validateForm(e, 'cpfRegister', 'cpfError')) {
+                        const formData = new FormData(alunoForm);
+                        handleFormSubmit(alunoForm, formData, 'Cadastro de aluno realizado com sucesso! Redirecionando para login...');
+                    }
+                });
+            }
+            
+            // Adiciona validação e envio ao formulário de academia
+            const academiaForm = document.querySelector('form[action="academia"]');
+            if (academiaForm) {
+                academiaForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (validateAcademiaForm(e)) {
+                        const formData = new FormData(academiaForm);
+                        handleFormSubmit(academiaForm, formData, 'Cadastro de academia realizado com sucesso! Redirecionando para login...');
+                    }
+                });
+            }
+            
+            // Adiciona validação e envio ao formulário de profissional
+            const profissionalForm = document.querySelector('form[action="/profissional"]');
+            if (profissionalForm) {
+                profissionalForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (validateForm(e, 'numberDoc', 'cpfProfError')) {
+                        const formData = new FormData(profissionalForm);
+                        handleFormSubmit(profissionalForm, formData, 'Cadastro de profissional realizado com sucesso! Redirecionando para login...');
+                    }
+                });
+            }
         });
     </script>
+    <!-- Simple Notify JS -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-notify@1.0.4/dist/simple-notify.min.js"></script>
 </head>
 
 <body>
@@ -250,7 +613,9 @@
                     <section>
                         <label for="cpfRegister" class="titleLabel">CPF</label>
                         <input type="text" name="cpfRegister" id="cpfRegister" placeholder="Digite seu CPF"
-                            maxlength="11" required>
+                            maxlength="14" pattern="\d{3}\.?\d{3}\.?\d{3}\-?\d{2}" 
+                            oninput="handleCPFInput(this, 'cpfError')" required>
+                        <div id="cpfError" style="color: red; font-size: 12px; display: none;"></div>
                     </section>
                 </section>
 
@@ -328,7 +693,10 @@
                     <label for="cpnjAcademyRegister" class="titleLabel">CNPJ</label>
                     <br>
                     <input type="text" name="cpnjAcademyRegister" id="cpnjAcademyRegister"
-                        placeholder="Digite o CNPJ de sua academia" maxlength="14" required>
+                        placeholder="Digite o CNPJ de sua academia" maxlength="18" 
+                        pattern="\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}"
+                        oninput="handleCNPJInput(this, 'cnpjError')" required>
+                    <div id="cnpjError" style="color: red; font-size: 12px; display: none;"></div>
                 </section>
 
                 <br>
@@ -542,9 +910,11 @@
                                 maxlength="11" required>
                         </section>
                         <section>
-                            <label for="cpfRegister" class="titleLabel">CPF</label>
+                            <label for="numberDoc" class="titleLabel">CPF</label>
                             <input type="text" name="numberDoc" id="numberDoc" placeholder="Digite seu CPF"
-                                maxlength="11" required>
+                                maxlength="14" pattern="\d{3}\.?\d{3}\.?\d{3}\-?\d{2}"
+                                oninput="handleCPFInput(this, 'cpfProfError')" required>
+                            <div id="cpfProfError" style="color: red; font-size: 12px; display: none;"></div>
                         </section>
                     </section>
 

@@ -4,20 +4,48 @@ const alunoModel = require("../models/alunoModel");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(12);
-//const { removeImg } = require("../public/img");
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const https = require("https");
 const { createPool } = require("mysql2");
+
+// Função auxiliar para validação de CPF
+function validateCPF(cpf) {
+  cpf = cpf.replace(/[\D]/g, '');
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1+$/.test(cpf)) return false;
+  
+  // Cálculo do primeiro dígito verificador
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(cpf.charAt(i)) * (10 - i);
+  }
+  let remainder = 11 - (sum % 11);
+  let digit1 = remainder >= 10 ? 0 : remainder;
+  
+  // Cálculo do segundo dígito verificador
+  sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum += parseInt(cpf.charAt(i)) * (11 - i);
+  }
+  remainder = 11 - (sum % 11);
+  let digit2 = remainder >= 10 ? 0 : remainder;
+  
+  return digit1 === parseInt(cpf.charAt(9)) && digit2 === parseInt(cpf.charAt(10));
+}
+
 const alunoController = {
+
   cadastrarAluno: async (req, res) => {
+    console.log('Recebendo requisição de cadastro:', req.body);
+    
     try {
       const {
         fullname,
         emailRegister,
         passwordRegister,
+        passwordRegisterConfirm,
         numberRegister,
         dataNasc,
-        // passwordRegisterConfirm,
         cep,
         rua,
         bairro,
@@ -29,14 +57,45 @@ const alunoController = {
         cvvValidation,
         numberCardRegister,
         nameCardRegister,
-        validityDate
+        validityDate,
+        plans
       } = req.body;
 
-      if (!fullname || !emailRegister || !passwordRegister || !numberRegister) {
-        return res.status(400).send("Todos os campos são obrigatórios.");
+      // Validações básicas
+      if (!fullname || !emailRegister || !passwordRegister || !numberRegister || !cpfRegister) {
+        console.log('Campos obrigatórios não preenchidos');
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Por favor, preencha todos os campos obrigatórios.',
+          missingFields: {
+            fullname: !fullname,
+            emailRegister: !emailRegister,
+            passwordRegister: !passwordRegister,
+            numberRegister: !numberRegister,
+            cpfRegister: !cpfRegister
+          }
+        });
       }
 
-      const senhaCriptografada = bcrypt.hashSync(passwordRegister, salt);
+
+      if (passwordRegister !== passwordRegisterConfirm) {
+        console.log('Senhas não coincidem');
+        return res.status(400).json({ 
+          success: false, 
+          message: 'As senhas não coincidem.' 
+        });
+      }
+      
+      if (!validateCPF(cpfRegister)) {
+        console.log('CPF inválido');
+        return res.status(400).json({
+          success: false,
+          message: 'CPF inválido. Por favor, verifique o número.'
+        });
+      }
+
+      // Criptografa a senha
+      const senhaCriptografada = await bcrypt.hash(passwordRegister, 10);
 
       const novoAluno = {
         NOME_COMPLETO: fullname,
@@ -46,12 +105,21 @@ const alunoController = {
         BAIRRO: bairro,
         CEP: cep,
         CIDADE: cidade,
-        COMPLEMENTO: complemento,
-        // CONFIRMAR_SENHA: passwordRegisterConfirm,
-        CPF: cpfRegister,
-        CVV: cvvValidation,
-        DATA_DE_NASCIMENTO: dataNasc,
-        NUMERO_DO_CARTAO: numberCardRegister,
+        UF: uf,
+        NUMERO: numero,
+        COMPLEMENTO: complemento || null,
+        CPF: cpfRegister.replace(/[\D]/g, ''), // Remove formatação do CPF
+        DATA_NASCIMENTO: dataNasc || null,
+        // Campos opcionais de cartão
+        CARTAO_NUMERO: numberCardRegister || null,
+        CARTAO_NOME: nameCardRegister || null,
+        CARTAO_VALIDADE: validityDate || null,
+        CARTAO_CVV: cvvValidation || null,
+        PLANO: plans || 'Gratuito',
+        DATA_CRIACAO: new Date(),
+        DATA_ATUALIZACAO: new Date(),
+        CVV: cvvValidation || null,
+        NUMERO_DO_CARTAO: numberCardRegister || null,
         NUMERO: numero,
         NOME_CARTAO: nameCardRegister,
         RUA: rua,
@@ -313,61 +381,7 @@ const alunoController = {
         valores: req.body,
       });
     }
-  },
-}
-
-exports.cadastrarAluno = (req, res) => {
-  const {
-    fullname,
-    emailRegister,
-    passwordRegister,
-    // passwordRegisterConfirm,
-    createPool,
-    rua,
-    NUMERO,
-    COMPLEMENTO,
-    numberRegister,
-    cpfRegister,
-    plans,
-    numberCardRegister,
-    nameCardRegister,
-    validityDate,
-    cvvValidation
-  } = req.body;
-
-  // Validação básica (exemplo)
-  if (!fullname || !emailRegister || !passwordRegister || passwordRegister) {
-    return res.render('cadastro', {
-      avisoErro: { createPool: 'erro-input' },
-      valores: req.body,
-      mensagem: 'Dados inválidos ou senhas diferentes!'
-    });
   }
-
-    // Simula salvamento
-    console.log('Novo aluno cadastrado:', req.body);
-
-    // Redireciona ou renderiza sucesso
-    res.redirect('/login');
-  },
-
-
-exports.cadastrarAluno = async (req, res) => {
-    const {
-      passwordRegister,
-      // passwordRegisterConfirm,
-      // ...
-    } = req.body;
-
-    if (passwordRegister !== passwordRegisterConfirm) {
-      return res.render('cadastro', { mensagem: 'Senhas não coincidem', valores: req.body });
-    }
-
-    const senhaCriptografada = await bcrypt.hash(passwordRegister, 10);
-
-    // Salve no banco a senhaCriptografada em vez da original
-  }
-
-
+};
 
 module.exports = alunoController;

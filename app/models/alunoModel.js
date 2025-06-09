@@ -1,15 +1,28 @@
 const pool = require("../../config/pool_conexoes");
 
+// Função auxiliar para executar queries com tratamento de conexão
+async function executeQuery(query, params = []) {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [rows] = await connection.query(query, params);
+        return rows;
+    } catch (error) {
+        console.error('Database query error:', error);
+        throw error;
+    } finally {
+        if (connection) connection.release();
+    }
+}
+
 const alunoModel = {
     // Buscar todos os alunos ativos
     findAll: async () => {
         try {
-            const [resultados] = await pool.query(
+            return await executeQuery(
                 `SELECT * FROM aluno
-                 WHERE status_aluno
-                 = 1`
+                 WHERE status_aluno = 1`
             );
-            return resultados;
         } catch (erro) {
             console.error("Erro no findAll:", erro);
             return [];
@@ -19,8 +32,8 @@ const alunoModel = {
     findEmail: async (email) => {
         try {
             console.log('Buscando aluno por email:', email);
-            const [resultados] = await pool.query(
-                `SELECT 
+            const query = `
+                SELECT 
                     CPF,
                     NOME_COMPLETO,
                     EMAIL,
@@ -29,21 +42,19 @@ const alunoModel = {
                     BAIRRO,
                     CIDADE
                 FROM ALUNO 
-                WHERE EMAIL = ?`,
-                [email]
-            );
+                WHERE EMAIL = ?`;
+                
+            const resultados = await executeQuery(query, [email]);
             console.log('Resultado da busca por email (aluno):', resultados);
-            return resultados;
+            return resultados || [];
         } catch (erro) {
             console.error("Erro ao buscar aluno por email:", {
                 message: erro.message,
-                sql: erro.sql,
                 code: erro.code,
                 sqlMessage: erro.sqlMessage
             });
             
             if (erro.code === 'ER_USER_LIMIT_REACHED') {
-                // Se o erro for limite de conexões, tentamos novamente após um pequeno delay
                 console.log("Tentando novamente após 1 segundo...");
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 return await alunoModel.findEmail(email);
@@ -59,14 +70,13 @@ const alunoModel = {
     // Buscar aluno por ID
     findById: async (id) => {
         try {
-            const [resultados] = await pool.query(
-                `SELECT * FROM ALUNO 
-                 WHERE CPF = ?`,
+            const resultado = await executeQuery(
+                'SELECT * FROM aluno WHERE CPF = ?',
                 [id]
             );
-            return resultados;
+            return resultado[0] || null;
         } catch (erro) {
-            console.error("Erro no findById:", erro);
+            console.error("Erro ao buscar aluno por ID:", erro);
             return null;
         }
     },
@@ -74,14 +84,15 @@ const alunoModel = {
     // Criar novo aluno
     create: async (aluno) => {
         try {
-            const [linhas, campos] = await pool.query('INSERT INTO ALUNO SET ?', [aluno])
-            console.log(linhas);
-            console.log(campos);
-            return linhas;
-        } catch (error) {
-            console.log(error);
-            return null;
-        }  
+            const resultado = await executeQuery(
+                'INSERT INTO ALUNO SET ?',
+                [aluno]
+            );
+            return resultado;
+        } catch (erro) {
+            console.error("Erro ao criar aluno:", erro);
+            throw erro;
+        }
     },
 
     // Atualizar dados do aluno
@@ -95,25 +106,25 @@ const alunoModel = {
                 dadosAtualizaveis.SENHA = aluno.SENHA;
             }
             
-            const [resultado] = await pool.query('UPDATE ALUNO SET ? WHERE CPF = ?', [dadosAtualizaveis, cpf]);
+            const resultado = await executeQuery(
+                'UPDATE ALUNO SET ? WHERE CPF = ?', 
+                [dadosAtualizaveis, cpf]
+            );
             return resultado;
         } catch (error) {
             console.error('Erro ao atualizar aluno:', error);
             throw error;
-        }  
+        }
     },
 
     // Desativar aluno (soft delete)
     delete: async (cpf) => {
-        const connection = await pool.getConnection();
+        let connection;
         try {
             console.log('Iniciando exclusão da conta com CPF:', cpf);
             
-            // Inicia uma transação
-            await connection.beginTransaction();
-            
             // Verifica se a tabela tem a coluna STATUS_ALUNO
-            const [columns] = await connection.query(
+            const columns = await executeQuery(
                 "SHOW COLUMNS FROM ALUNO LIKE 'STATUS_ALUNO'"
             );
             
@@ -130,32 +141,22 @@ const alunoModel = {
             }
             
             console.log('Executando query:', query);
-            const [resultado] = await connection.query(query, params);
-            
-            // Confirma a transação
-            await connection.commit();
+            const resultado = await executeQuery(query, params);
             
             console.log('Resultado da exclusão:', resultado);
             return resultado;
             
         } catch (error) {
-            // Desfaz a transação em caso de erro
-            if (connection) await connection.rollback();
-            
             console.error('Erro ao desativar aluno:', {
                 message: error.message,
                 code: error.code,
                 errno: error.errno,
                 sqlState: error.sqlState,
-                sqlMessage: error.sqlMessage,
-                sql: error.sql
+                sqlMessage: error.sqlMessage
             });
             
             throw error;
-        } finally {
-            // Libera a conexão de volta para o pool
-            if (connection) connection.release();
-        }  
+        }
     },
 };
 
