@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remarcar Agendamento</title>
+    <link rel="stylesheet" href="/css/styleInterface.css">
+</head>
+<body>
+    <header>
+        <a href="/interfaceUsuario"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+        <nav id="menu">
+            <ul>
+                <li><a href="/aluno/buscarProfissional" class="navConfig">Buscar Profissional</a></li>
+                <li><a href="/aluno/buscarAcademia" class="navConfig">Buscar Academias</a></li>
+                <li><a href="/produtos" class="navConfig" target="_blank">Produtos</a></li>
+                <li><a href="/aluno/editarDados" class="navConfig">Editar Dados</a></li>
+                <li><a href="/" class="navConfig">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+
+<main class="container">
+    <section class="title">
+        <h1>Remarcar Agendamento</h1>
+    </section>
+
+    <% if (errors && errors.length > 0) { %>
+        <div class="alert alert-danger">
+            <ul>
+                <% errors.forEach(error => { %>
+                    <li><%= error.msg %></li>
+                <% }) %>
+            </ul>
+        </div>
+    <% } %>
+
+    <form action="/aluno/agendamentos/<%= agendamento.PROTOCOLO %>/editar" method="POST" class="form-agendamento">
+        <div class="form-group">
+            <label for="area">Especialidade</label>
+            <select name="area" id="area" class="form-control" required onchange="atualizarProfissionais(this.value)">
+                <option value="">Selecione a especialidade</option>
+                <% especialidades.forEach(function(esp) { %>
+                    <option value="<%= esp %>" <%= agendamento.tipo === esp ? 'selected' : '' %>><%= esp %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="professional">Profissional</label>
+            <select name="professional" id="professional" class="form-control" required>
+                <option value="">Selecione o profissional</option>
+                <% profissionais.forEach(function(prof) { %>
+                    <option value="<%= prof.id %>" <%= agendamento.profissional_id === prof.id ? 'selected' : '' %>><%= prof.nome %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="date">Data</label>
+            <input type="date" name="date" id="date" class="form-control" 
+                   value="<%= agendamento.DATA_AGENDAMENTO %>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="time">Horário</label>
+            <input type="time" name="time" id="time" class="form-control" 
+                   value="<%= agendamento.HORARIO %>" required>
+        </div>
+
+        <div class="form-buttons">
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            <a href="/aluno/agendamentos" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</main>
+
+<footer>
+    <p>&copy; 2025 Gymtri - Todos os direitos reservados</p>
+</footer>
+
+<script>
+    // Função para atualizar o select de profissionais
+    async function atualizarProfissionais(especialidade) {
+        try {
+            console.log('Buscando profissionais para especialidade:', especialidade);
+            const response = await fetch(`/aluno/api/profissionais?especialidade=${encodeURIComponent(especialidade)}`);
+            
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+            
+            const profissionais = await response.json();
+            console.log('Profissionais recebidos:', profissionais);
+
+            // Verificar se a resposta é um array válido
+            if (!Array.isArray(profissionais)) {
+                throw new Error('Resposta inválida do servidor - não é um array');
+            }
+
+            const select = document.getElementById('professional');
+            const currentProfissionalId = '<%= agendamento.profissional_id %>';
+            select.innerHTML = '<option value="">Selecione o profissional</option>';
+
+            // Verificar se há profissionais para mostrar
+            if (profissionais.length > 0) {
+                profissionais.forEach(profissional => {
+                    // Verificar se o profissional tem os campos necessários
+                    if (profissional.id && profissional.nome) {
+                        const option = document.createElement('option');
+                        option.value = String(profissional.id);
+                        option.textContent = profissional.nome;
+                        // Manter o profissional atual selecionado se ainda estiver na lista
+                        if (String(profissional.id) === currentProfissionalId) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    }
+                });
+            } else {
+                console.log('Nenhum profissional encontrado para a especialidade:', especialidade);
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Nenhum profissional disponível';
+                select.appendChild(option);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar profissionais:', error);
+            alert('Erro ao carregar profissionais. Por favor, tente novamente.');
+            const select = document.getElementById('professional');
+            select.innerHTML = '<option value="">Erro ao carregar profissionais</option>';
+        }
+    }
+
+    // Carregar profissionais quando a especialidade mudar
+    document.getElementById('area').addEventListener('change', function() {
+        const especialidade = this.value;
+        if (especialidade) {
+            atualizarProfissionais(especialidade);
+        } else {
+            document.getElementById('professional').innerHTML = '<option value="">Selecione o profissional</option>';
+        }
+    });
+</script>
+
+<script src="/js/script.js"></script>
+</body>
+</html>

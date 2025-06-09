@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar academia</title>
+    <link rel="stylesheet" href="/css/styleInterface.css">
+</head>
+<body>
+    <header>
+        <a href="/interfaceUsuario"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+        <nav id="menu">
+            <ul>
+                <li><a href="/aluno/buscarProfissional" class="navConfig">Buscar Profissional</a></li>
+                <li><a href="/aluno/buscarAcademia" class="navConfig">Buscar Academias</a></li>
+                <li><a href="/produtos" class="navConfig" target="_blank">Produtos</a></li>
+                <li><a href="/aluno/editarDados" class="navConfig">Editar Dados</a></li>
+                <li><a href="/" class="navConfig">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="title">
+            <h1>Buscar academia</h1>
+        </section>
+
+        <section class="search-container">
+            <div class="search-box">
+                <label class="labelAgend" for="searchInput">Buscar academia</label>
+                <input type="text" 
+                       id="searchInput" 
+                       name="search" 
+                       placeholder="Digite o nome da academia"
+                       autocomplete="off">
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+        </section>
+
+        <section id="academiasList" class="consult">
+            <% if (academias && academias.length > 0) { %>
+                <% academias.forEach(academia => { %>
+                    <section class="itemConsult">
+                        <h4><%= academia.nome %></h4>
+                        <p><span>Bairro:</span> <%= academia.bairro %></p>
+                        <p><span>Cidade:</span> <%= academia.cidade %> - <%= academia.uf %></p>
+                        <div class="btnConsult">
+                            <a href="/aluno/academia/<%= academia.id %>" class="btnConfig">
+                                Ver Detalhes
+                            </a>
+                        </div>
+                    </section>
+                <% }); %>
+            <% } else { %>
+                <section class="no-results">
+                    <p>Nenhuma academia encontrada</p>
+                </section>
+            <% } %>
+        </section>
+    </main>
+
+    <style>
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+        .search-box {
+            position: relative;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .suggestion-item:hover, .suggestion-item.highlighted {
+            background-color: #f5f5f5;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const suggestionsContainer = document.getElementById('suggestions');
+            let timeoutId;
+
+            // Função para buscar sugestões
+            async function fetchSuggestions(query) {
+                if (!query || query.length < 2) {
+                    suggestionsContainer.style.display = 'none';
+                    return [];
+                }
+
+                try {
+                    const response = await fetch(`/api/academias/buscar?termo=${encodeURIComponent(query)}`);
+                    if (!response.ok) throw new Error('Erro na busca');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Erro ao buscar sugestões:', error);
+                    return [];
+                }
+            }
+
+            // Função para exibir sugestões
+            function showSuggestions(suggestions) {
+                if (!suggestions || suggestions.length === 0) {
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+
+                suggestionsContainer.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.textContent = `${suggestion.nome} - ${suggestion.bairro}, ${suggestion.cidade}-${suggestion.uf}`;
+                    div.addEventListener('click', () => {
+                        searchInput.value = suggestion.nome;
+                        suggestionsContainer.style.display = 'none';
+                        // Focar no primeiro resultado da busca
+                        filterAcademias(suggestion.nome);
+                    });
+                    suggestionsContainer.appendChild(div);
+                });
+                suggestionsContainer.style.display = 'block';
+            }
+
+            // Função para filtrar academias na lista
+            function filterAcademias(query) {
+                const academias = document.querySelectorAll('.itemConsult');
+                let hasResults = false;
+                
+                academias.forEach(acad => {
+                    const nome = acad.querySelector('h4').textContent.toLowerCase();
+                    if (nome.includes(query.toLowerCase())) {
+                        acad.style.display = '';
+                        hasResults = true;
+                    } else {
+                        acad.style.display = 'none';
+                    }
+                });
+
+                // Mostrar mensagem se não houver resultados
+                const noResults = document.querySelector('.no-results');
+                if (noResults) {
+                    noResults.style.display = hasResults ? 'none' : 'block';
+                }
+            }
+
+            // Event listeners
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(timeoutId);
+                const query = e.target.value.trim();
+                
+                if (query.length < 2) {
+                    // Se a busca for vazia, mostrar todas as academias
+                    document.querySelectorAll('.itemConsult').forEach(el => el.style.display = '');
+                    const noResults = document.querySelector('.no-results');
+                    if (noResults) noResults.style.display = 'none';
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+                
+                timeoutId = setTimeout(async () => {
+                    const suggestions = await fetchSuggestions(query);
+                    showSuggestions(suggestions);
+                    filterAcademias(query);
+                }, 300);
+            });
+
+            // Navegação por teclado nas sugestões
+            searchInput.addEventListener('keydown', (e) => {
+                const items = suggestionsContainer.querySelectorAll('.suggestion-item');
+                const highlighted = suggestionsContainer.querySelector('.highlighted');
+                let index = Array.from(items).indexOf(highlighted);
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (highlighted) highlighted.classList.remove('highlighted');
+                    index = index < items.length - 1 ? index + 1 : 0;
+                    items[index].classList.add('highlighted');
+                    items[index].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (highlighted) highlighted.classList.remove('highlighted');
+                    index = index > 0 ? index - 1 : items.length - 1;
+                    items[index].classList.add('highlighted');
+                    items[index].scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'Enter' && highlighted) {
+                    e.preventDefault();
+                    searchInput.value = highlighted.textContent.split(' - ')[0];
+                    suggestionsContainer.style.display = 'none';
+                    filterAcademias(searchInput.value);
+                } else if (e.key === 'Escape') {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+
+            // Fechar sugestões ao clicar fora
+            document.addEventListener('click', (e) => {
+                if (e.target !== searchInput) {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

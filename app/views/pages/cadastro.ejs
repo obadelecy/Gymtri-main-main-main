@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastre-se</title>
+    <link rel="stylesheet" href="css/styleLogin.css">
+    <script>
+        // Funções para manipulação de formulários e CEP
+        function showForm(formType) {
+            //Esconde todos os formulários
+            document.getElementById('registerAluno').style.display = 'none';
+            document.getElementById('registerAcademia').style.display = 'none';
+            document.getElementById('registerProfissional').style.display = 'none';
+
+
+            document.getElementById('register' + formType.charAt(0).toUpperCase() + formType.slice(1)).style.display = 'block';
+        }
+
+        function mascaraCEP(event) {
+            let cep = event.target.value;
+            cep = cep.replace(/\D/g, "");
+            cep = cep.replace(/^(\d{5})(\d)/, "$1-$2");
+            event.target.value = cep;
+        }
+
+        function mascaraCEPAcad(event) {
+            let cep = event.target.value;
+            cep = cep.replace(/\D/g, "");
+            cep = cep.replace(/^(\d{5})(\d)/, "$1-$2");
+            event.target.value = cep;
+        }
+
+        function pesquisacep(cep, formType = 'aluno') {
+            cep = cep.replace(/\D/g, '');
+
+            if (cep === "" || cep.length !== 8) {
+                alert("CEP inválido. Deve conter 8 dígitos.");
+                return;
+            }
+
+            const fieldIds = {
+                aluno: {
+                    cep: 'cep',
+                    logradouro: 'rua',
+                    bairro: 'bairro',
+                    localidade: 'cidade',
+                    uf: 'uf'
+                },
+                academia: {
+                    cep: 'cepAcad',
+                    logradouro: 'ruaAcad',
+                    bairro: 'bairroAcad',
+                    localidade: 'cidadeAcad',
+                    uf: 'ufAcad'
+                }
+            };
+
+            const fields = fieldIds[formType];
+
+            const script = document.createElement('script');
+            script.src = `https://viacep.com.br/ws/${cep}/json/?callback=preencheCampos${formType}`;
+            document.body.appendChild(script);
+
+            window[`preencheCampos${formType}`] = function (conteudo) {
+                if (!("erro" in conteudo)) {
+                    document.getElementById(fields.logradouro).value = conteudo.logradouro;
+                    document.getElementById(fields.bairro).value = conteudo.bairro;
+                    document.getElementById(fields.localidade).value = conteudo.localidade;
+                    document.getElementById(fields.uf).value = conteudo.uf;
+                } else {
+                    alert("CEP não encontrado.");
+                }
+                document.body.removeChild(script);
+                delete window[`preencheCampos${formType}`];
+            };
+        }
+
+        function alterType() {
+            const radios = document.querySelectorAll('input[name="tipoProf"]');
+            const labelDinamica = document.getElementById('labelCpfCnpj');
+
+            radios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.checked) {
+                        labelDinamica.textContent = this.value;
+                    }
+                });
+            });
+        }
+
+        // Inicialização da página
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mostra apenas o formulário de aluno por padrão
+            showForm('aluno');
+        });
+    </script>
+</head>
+
+<body>
+    <header>
+        <a href="/"><img src="img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+        <nav id="menu">
+            <ul>
+                <li> <a href="/produtos" class="navConfig">Produtos</a></li>
+                <li><a href="/#plansValueContainer" class="navConfig">Planos</a></li>
+                <li><a href="/#blockAdvantage" class="navConfig">Vantagens</a></li>
+            </ul>
+        </nav>
+
+        <nav id="menu2">
+            <ul>
+                <li><a href="/cadastro" class="navConfig" id="linkRegister">Cadastre-se</a></li>
+                <li><a href="/login" class="navConfig">Entrar</a></li>
+            </ul>
+        </nav>
+
+        <input type="checkbox" id="menuHamburguer">
+
+        <label for="menuHamburguer" class="menuBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
+        <nav id="menuHamb">
+            <ul>
+                <li> <a href="/produtos" class="navConfig">Produtos</a></li>
+                <li><a href="/#plansValueContainer" class="navConfig">Planos</a></li>
+                <li><a href="/#blockAdvantage" class="navConfig">Vantagens</a></li>
+                <li><a href="/cadastro" class="navConfig">Cadastre-se</a></li>
+                <li><a href="/login" class="navConfig">Entrar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="title" class="h1Title">
+            <h1>Escolha como deseja se cadastrar</h1>
+        </section>
+        <hr>
+
+        <section id="blockChoose">
+            <section id="chooseUserRegister">
+                <button class="btnChoose" onclick="showForm('aluno')" type="button">Aluno</button>
+                <button class="btnChoose" onclick="showForm('academia')" type="button">Academia</button>
+                <button class="btnChoose" onclick="showForm('profissional')" type="button">Profissional</button>
+            </section>
+        </section>
+
+        <!-- Cadastro Aluno -->
+        <section class="sectMargin" id="registerAluno" style="display: none;">
+            <form action="aluno" method="post">
+                <section id="fullnameInput">
+                    <label for="fullname" class="titleLabel">Nome completo</label>
+                    <br>
+                    <input id="fullname" name="fullname" type="text" placeholder="Digite seu nome completo" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="emailRegisterInput">
+                    <label for="emailRegister" class="titleLabel">E-mail</label>
+                    <br>
+                    <input id="emailRegister" name="emailRegister" type="email" placeholder="Digite seu e-mail"
+                        required>
+                </section>
+
+                <br>
+
+                <section id="dateInput">
+                    <label for="dataNasc" class="titleLabel">Data de nascimento</label>
+                    <br>
+                    <input id="dataNasc" name="dataNasc" type="date" placeholder="Informe sua data de nascimento"
+                        required>
+                </section>
+
+                <br>
+                <section class="sectMargin" id="passwordInput">
+                    <label for="passwordRegister" class="titleLabel">Senha</label>
+                    <input type="password" name="passwordRegister" id="passwordRegister" placeholder="Insira sua senha"
+                        required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="passwordConfirmInput">
+                    <label for="passwordRegisterConfirm" class="titleLabel">Confirmar senha</label>
+                    <input type="password" name="passwordRegisterConfirm" id="passwordRegisterConfirm"
+                        placeholder="Confirme sua senha" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="cepInput">
+                    <label for="cep" class="titleLabel">CEP</label>
+                    <input type="text" name="cep" id="cep" placeholder="CEP" onblur="pesquisacep(this.value, 'aluno')"
+                        onkeyup="mascaraCEP(event)" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="ruaInput">
+                    <label for="rua" class="titleLabel">Rua</label>
+                    <input type="text" name="rua" id="rua" placeholder="Rua" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="bairroInput">
+                    <label for="bairro" class="titleLabel">Bairro</label>
+                    <input type="text" name="bairro" id="bairro" placeholder="Bairro" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="cidadeInput">
+                    <label for="cidade" class="titleLabel">Cidade</label>
+                    <input type="text" name="cidade" id="cidade" placeholder="Cidade" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="ufInput">
+                    <label for="uf" class="titleLabel">UF</label>
+                    <input type="text" name="uf" id="uf" placeholder="UF" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="numeroInput">
+                    <label for="numero" class="titleLabel">Número</label>
+                    <input type="text" name="numero" id="numero" placeholder="Número" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="complementoInput">
+                    <label for="complemento" class="titleLabel">Complemento</label>
+                    <input type="text" name="complemento" id="complemento" placeholder="Complemento">
+                </section>
+
+                <section class="sectMargin" id="numberAndCpf">
+                    <section>
+                        <label for="numberRegister" class="titleLabel">Telefone</label>
+                        <input type="text" name="numberRegister" id="numberRegister" placeholder="Ex: 11940028922"
+                            maxlength="11" required>
+                    </section>
+                    <section>
+                        <label for="cpfRegister" class="titleLabel">CPF</label>
+                        <input type="text" name="cpfRegister" id="cpfRegister" placeholder="Digite seu CPF"
+                            maxlength="11" required>
+                    </section>
+                </section>
+
+                <br>
+
+                <section>
+                    <label class="titleLabel" for="choicePlans">Escolha o plano:</label>
+                    <select name="plans" id="choicePlans" required>
+                        <option id="null2" value="">Escolha o plano</option>
+                        <option value="Gratuito">Gratuito</option>
+                        <option value="Básico">Básico</option>
+                        <option value="Intermediário">Intermediário</option>
+                        <option value="Pro">Premium</option>
+                    </select>
+                </section>
+
+                <section id="card" class="h1Title">
+                    <h1>DADOS DO CARTÃO</h1>
+                </section>
+
+                <hr>
+
+                <section class="sectMargin" id="numberCard">
+                    <label for="numberCardRegister" class="titleLabel">Número do cartão</label>
+                    <input type="text" name="numberCardRegister" id="numberCardRegister"
+                        placeholder="Insira o número do cartão (Sem ' . ')" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="nameCard">
+                    <label for="nameCardRegister" class="titleLabel">Nome impresso no cartão</label>
+                    <input type="text" name="nameCardRegister" id="nameCardRegister"
+                        placeholder="Digite como está impresso no cartão" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="codeValidation">
+                    <section>
+                        <label for="validityDate" class="titleLabel">Validade</label>
+                        <input type="text" name="validityDate" id="validityDate" placeholder="Ex: 02/29" maxlength="5"
+                            required>
+                    </section>
+                    <section>
+                        <label for="cvvValidation" class="titleLabel">CVV</label>
+                        <input type="text" name="cvvValidation" id="cvvValidation" placeholder="3 digitos no verso"
+                            maxlength="3" required>
+                    </section>
+                </section>
+
+                <section id="buttonInput">
+                    <button type="submit" id="confirmRegister">Confirmar Cadastro</button>
+                </section>
+
+                <section id="textLogin">
+                    <a href="/login">Já possuo uma conta</a>
+                </section>
+            </form>
+        </section>
+
+        <!-- Cadastro Academia -->
+        <section id="registerAcademia" style="display: none;">
+            <form action="academia" method="post">
+                <section class="sectMargin" id="nameAcademyInput">
+                    <label for="nameAcademyRegister" class="titleLabel">Nome da academia</label>
+                    <br>
+                    <input id="nameAcademyRegister" name="nameAcademyRegister" type="text"
+                        placeholder="Digite o nome da academia" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="cpnjAcademyInput">
+                    <label for="cpnjAcademyRegister" class="titleLabel">CNPJ</label>
+                    <br>
+                    <input type="text" name="cpnjAcademyRegister" id="cpnjAcademyRegister"
+                        placeholder="Digite o CNPJ de sua academia" maxlength="14" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="emailAcademyInput">
+                    <label for="emailAcademyRegister" class="titleLabel">E-mail</label>
+                    <br>
+                    <input id="emailAcademyRegister" name="emailAcademyRegister" type="email"
+                        placeholder="Digite o email da academia" required>
+                </section>
+
+                <section class="sectMargin" id="cellAcademyInput">
+                    <label for="cellAcademyRegister" class="titleLabel">Telefone</label>
+                    <br>
+                    <input id="cellAcademyRegister" name="cellAcademyRegister" type="text"
+                        placeholder="Digite o telefone da academia" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="passwordAcademyInput">
+                    <label for="passwordAcademyRegister" class="titleLabel">Senha</label>
+                    <input type="password" name="passwordAcademyRegister" id="passwordAcademyRegister"
+                        placeholder="Insira sua senha" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="passConfirmInput">
+                    <label for="passAcademyConfirm" class="titleLabel">Confirmar senha</label>
+                    <input type="password" name="passAcademyConfirm" id="passAcademyConfirm"
+                        placeholder="Confirme sua senha" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="cepInput">
+                    <label for="cepAcad" class="titleLabel">CEP</label>
+                    <input type="text" name="cepAcad" id="cepAcad" placeholder="CEP"
+                        onblur="pesquisacep(this.value, 'academia')" onkeyup="mascaraCEPAcad(event)" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="ruaInput">
+                    <label for="ruaAcad" class="titleLabel">Rua</label>
+                    <input type="text" name="ruaAcad" id="ruaAcad" placeholder="Rua" readonly required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="bairroInput">
+                    <label for="bairroAcad" class="titleLabel">Bairro</label>
+                    <input type="text" name="bairroAcad" id="bairroAcad" placeholder="Bairro" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="cidadeInput">
+                    <label for="cidadeAcad" class="titleLabel">Cidade</label>
+                    <input type="text" name="cidadeAcad" id="cidadeAcad" placeholder="Cidade" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="ufInput">
+                    <label for="ufAcad" class="titleLabel">UF</label>
+                    <input type="text" name="ufAcad" id="ufAcad" placeholder="UF" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="numeroInput">
+                    <label for="numeroAcad" class="titleLabel">Número</label>
+                    <input type="text" name="numeroAcad" id="numeroAcad" placeholder="Número" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="complementoInput">
+                    <label for="complementoAcad" class="titleLabel">Complemento</label>
+                    <input type="text" name="complementoAcad" id="complementoAcad" placeholder="Complemento">
+                </section>
+
+                <section class="sectMargin" id="capacityAcademyInput">
+                    <label for="capacityAcademyRegister" class="titleLabel">Capacidade</label>
+                    <input type="number" name="capacityAcademyRegister" id="capacityAcademyRegister"
+                        placeholder="Número máximo de alunos por horário" required>
+                </section>
+
+                <section class="sectMargin" id="hourAcademyInput">
+                    <label for="hourAcademyRegister" class="titleLabel">Horário de funcionamento</label>
+                    <section class="hourAcademy">
+                        <section class="blockHour">
+                            <p>Abertura</p>
+                            <input type="time" name="hourAcademyRegisterAb" id="hourAcademyRegisterAb" required>
+                        </section>
+                        <section class="blockHour">
+                            <p>Encerramento</p>
+                            <input type="time" name="hourAcademyRegisterEnc" id="hourAcademyRegisterEnc" required>
+                        </section>
+                    </section>
+                </section>
+
+                <section class="sectMargin" id="activityAcademyInput">
+                    <label for="activityAcademyRegister" class="titleLabel">Atividades disponíveis</label>
+                    <section id="activityBlock">
+                        <input type="checkbox" name="musculacao" id="musculacao" value="Musculação">
+                        <label for="musculacao">Musculação</label>
+                        <br>
+                        <input type="checkbox" name="crossfit" id="crossfit" value="Crossfit">
+                        <label for="crossfit">Crossfit</label>
+                        <br>
+                        <input type="checkbox" name="cardio" id="cardio" value="Treinos Cardiovasculares">
+                        <label for="cardio">Treinos Cardiovasculares</label>
+                        <br>
+                        <input type="checkbox" name="lutas" id="lutas" value="Lutas">
+                        <label for="lutas">Lutas</label>
+                        <br>
+                        <input type="checkbox" name="danca" id="danca" value="Danças">
+                        <label for="danca">Danças</label>
+                        <br>
+                        <input type="checkbox" name="gisnastica" id="gisnastica" value="Ginástica">
+                        <label for="gisnastica">Ginástica</label>
+                        <br>
+                        <input type="checkbox" name="natacao" id="natacao" value="Natação">
+                        <label for="natacao">Natação</label>
+                        <br>
+                        <input type="checkbox" name="pilates" id="pilates" value="Pilates">
+                        <label for="pilates">Pilates</label>
+                        <br>
+                        <input type="checkbox" name="yoga" id="yoga" value="Yoga">
+                        <label for="yoga">Yoga</label>
+                    </section>
+                </section>
+
+                <section id="buttonInput">
+                    <button type="submit" id="confirmRegister">Confirmar Cadastro</button>
+                </section>
+
+                <section id="textLogin">
+                    <a href="/login">Já possuo uma conta</a>
+                </section>
+            </form>
+        </section>
+
+        <!-- Cadastro Profissional -->
+        <section id="registerProfissional" style="display: none;">
+            <form action="/profissional" method="post">
+                <section class="sectMargin" id="fullnameInput">
+                    <label for="fullname" class="titleLabel">Nome completo</label>
+                    <br>
+                    <input id="fullname" name="fullname" type="text" placeholder="Digite seu nome completo" required>
+                </section>
+
+                <br>
+
+                <section class="sectMargin" id="emailRegisterInput">
+                    <label for="emailRegister" class="titleLabel">E-mail</label>
+                    <br>
+                    <input id="emailRegister" name="emailRegister" type="email" placeholder="Digite seu e-mail"
+                        required>
+                </section>
+
+                <section class="sectMargin" id="numberAndCpf">
+                    <section id="sectRadio">
+                        <label for="tipoProf">Tipo de documento</label>
+                        <input type="radio" name="tipoProf" id="tipoProfCpf" value="CPF">CPF
+                        <input type="radio" name="tipoProf" id="tipoProfCnpj" value="CNPJ">CNPJ
+                    </section>
+
+                    <br>
+
+                    <section class="sectMargin" id="professionRegisterInput">
+                        <label for="professionRegister" class="titleLabel">Profissão</label>
+                        <br>
+                        <select name="profession" id="profession" required>
+                            <option value="">Selecione a especialidade</option>
+                            <option value="Nutricionista">Nutricionista</option>
+                            <option value="Personal Trainer">Personal Trainer</option>
+                        </select>
+                    </section>
+
+                    <section class="sectMargin" id="profissionalRegister">
+                        <label for="profissionalReg" class="titleLabel">Registro profissional</label>
+                        <input type="text" name="profissionalReg" id="profissionalReg"
+                            placeholder="Informe seu registro profissional (Número CRM ou CRN)." required>
+                    </section>
+
+                    <br>
+                    <section class="sectMargin" id="passwordInput">
+                        <label for="passwordRegister" class="titleLabel">Senha</label>
+                        <input type="password" name="passwordRegister" id="passwordRegister"
+                            placeholder="Insira sua senha" required>
+                    </section>
+
+                    <br>
+
+                    <section class="sectMargin" id="passwordConfirmInput">
+                        <label for="passwordRegisterConfirm" class="titleLabel">Confirmar senha</label>
+                        <input type="password" name="passwordRegisterConfirm" id="passwordRegisterConfirm"
+                            placeholder="Confirme sua senha" required>
+                    </section>
+
+                    <br>
+
+                    <section class="sectMargin" id="numberAndCpf">
+                        <section>
+                            <label for="numberRegister" class="titleLabel">Telefone</label>
+                            <input type="text" name="numberRegister" id="numberRegister" placeholder="Ex: 11940028922"
+                                maxlength="11" required>
+                        </section>
+                        <section>
+                            <label for="cpfRegister" class="titleLabel">CPF</label>
+                            <input type="text" name="numberDoc" id="numberDoc" placeholder="Digite seu CPF"
+                                maxlength="11" required>
+                        </section>
+                    </section>
+
+                    <section id="buttonInput">
+                        <button type="submit" id="confirmRegister">Confirmar Cadastro</button>
+                    </section>
+
+                    <section id="textLogin">
+                        <a href="/login">Já possuo uma conta</a>
+                    </section>
+            </form>
+        </section>
+    </main>
+</body>
+
+</html>

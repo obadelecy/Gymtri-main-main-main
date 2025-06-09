@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Profissional</title>
+    <link rel="stylesheet" href="/css/styleInterface.css">
+</head>
+<body>
+    <header>
+        <a href="/profissional/interface"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+        <nav id="menu">
+            <ul>
+                <li><a href="/profissional/buscarAluno" class="navConfig">Buscar aluno</a></li>
+                <li><a href="/profissional/atividades" class="navConfig">Atividades</a></li>
+                <li><a href="/profissional/relatorios" class="navConfig">Relatórios</a></li>
+                <li><a href="/profissional/editar-dados" class="navConfig">Editar dados</a></li>
+                <li><a href="/logout" class="navConfig">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="title">
+            <h1>Minha Agenda</h1>
+        </section>
+
+        <% if (typeof flash.error !== 'undefined' && flash.error.length > 0) { %>
+            <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 4px; margin: 1rem 0; border: 1px solid #f5c6cb;">
+                <%= flash.error %>
+            </div>
+        <% } %>
+
+        <% if (!temAgendamentos) { %>
+            <section class="no-agendamentos">
+                <p>Nenhum agendamento encontrado.</p>
+                <div style="margin-top: 1rem;">
+                    <a href="/profissional/novo-agendamento" class="btnConfig">Agendar consulta</a>
+                </div>
+            </section>
+        <% } else { %>
+            <section id="blockConsultUser" class="consult">
+                <% agendamentos.forEach(function(agendamento, index) { %>
+                    <section id="item<%= index + 1 %>" class="itemConsult">
+                        <h4><%= agendamento.tipo %></h4>
+                        <p><span>Aluno(a):</span> <%= agendamento.aluno %></p>
+                        <p><span>Data:</span> <%= agendamento.data %></p>
+                        <p><span>Horário:</span> <%= agendamento.horario %></p>
+                        <p><span>Status:</span> 
+                            <% if (agendamento.status === 1) { %>
+                                <span class="status-confirmed status-badge">Confirmado</span>
+                            <% } else if (agendamento.status === 0) { %>
+                                <span class="status-pending status-badge">Pendente</span>
+                            <% } else { %>
+                                <span class="status-cancelled status-badge">Cancelado</span>
+                            <% } %>
+                        </p>
+                        <% if (agendamento.motivo) { %>
+                            <p><span>Motivo:</span> <%= agendamento.motivo %></p>
+                        <% } %>
+                        
+                        <section id="btnConsult">
+                            <% if (agendamento.status !== 1) { %>
+                                <form action="/profissional/agenda/<%= agendamento.id %>/confirmar" method="POST" style="display: inline-block; margin: 0; width: 100%;">
+                                    <button type="submit" class="btnConfig" style="background-color: #2ecc71; border: none;">
+                                        Confirmar
+                                    </button>
+                                </form>
+                            <% } %>
+                            
+                            <button type="button" class="btnConfig" onclick="abrirModalRemarcar('<%= agendamento.id %>')" 
+                                style="background-color: #3498db; border: none;">
+                                Remarcar
+                            </button>
+                            
+                            <% if (agendamento.status !== 0) { %>
+                                <form action="/profissional/agenda/<%= agendamento.id %>/cancelar" method="POST" style="display: inline-block; margin: 0; width: 100%;">
+                                    <button type="submit" class="btnConfig" style="background-color: #e74c3c; border: none;" 
+                                        onclick="return confirm('Tem certeza que deseja cancelar este agendamento?')">
+                                        Cancelar
+                                    </button>
+                                </form>
+                            <% } %>
+                        </section>
+                    </section>
+                <% }); %>
+            </section>
+        <% } %>
+        
+        <section id="btnAgendar">
+            <a href="/profissional/novo-agendamento" class="btnConfig">Novo Agendamento</a>
+        </section>
+    </main>
+    
+    <script>
+        function abrirModalRemarcar(id) {
+            // Implemente a lógica para abrir o modal de remarcação aqui
+            // Por exemplo: window.location.href = '/profissional/agenda/' + id + '/editar';
+            alert('Funcionalidade de remarcação será implementada aqui');
+        }
+    </script>
+</html>

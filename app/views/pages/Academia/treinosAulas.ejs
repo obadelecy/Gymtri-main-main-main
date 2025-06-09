@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinos e aulas</title>
+    <link rel="stylesheet" href="/public/css/styleInterface.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <section class="title">
+            <h1>Consulte treinos e aulas disponíveis</h1>
+        </section>
+
+        <section id="blockConsultUser" class="consult">
+            <% treinos.forEach(function(treino) { %>
+                <section class="itemConsult">
+                    <h4><%= treino.nome %></h4>
+                    <p><span>Profissional(a):</span> <%= treino.profissional %></p>
+                    <p><span>Situação:</span> <%= treino.situacao %></p>
+                    <p><span>Data:</span> <%= treino.data %></p>
+                    <p><span>Horário:</span> <%= treino.horario %></p>
+
+                    <section id="btnConsult">
+                        <button class="btnConfig">Agendar aluno</button>
+                        <button class="btnConfig">Remover aluno</button>
+                    </section>
+                </section>
+            <% }) %>
+
+            <% if(treinos.length === 0) { %>
+                <section class="notConsult">
+                    <h4>Não há mais atividades.</h4>
+                </section>
+            <% } %>
+        </section>
+    </main>
+</body>
+</html>

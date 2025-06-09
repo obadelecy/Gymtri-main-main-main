@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus agendamentos</title>
+    <link rel="stylesheet" href="/css/styleInterface.css">
+</head>
+<body>
+    <header>
+        <a href="/interfaceUsuario"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+        <nav id="menu">
+            <ul>
+                <li><a href="/aluno/buscarProfissional" class="navConfig">Buscar Profissional</a></li>
+                <li><a href="/aluno/buscarAcademia" class="navConfig">Buscar Academias</a></li>
+                <li><a href="/produtos" class="navConfig" target="_blank">Produtos</a></li>
+                <li><a href="/aluno/editarDados" class="navConfig">Editar Dados</a></li>
+                <li><a href="/" class="navConfig">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="title">
+            <h1>Consulte seus agendamentos</h1>
+        </section>
+        
+        <% if (temAgendamentos) { %>
+            <section id="blockConsultUser" class="consult">
+                <% agendamentosFormatados.forEach((agendamento, index) => { %>
+                    <% if (agendamento && agendamento.profissional && agendamento.data && agendamento.horario) { %>
+                        <section id="item<%= index + 1 %>" class="itemConsult">
+                            <h4><%= agendamento.tipo %></h4>
+                            <p><span>Profissional:</span> <%= agendamento.profissional %></p>
+                            <p><span>Data:</span> <%= agendamento.data %></p>
+                            <p><span>Horário:</span> <%= agendamento.horario %></p>
+                            <section id="btnConsult">
+                                <button class="btnConfig" onclick="irParaConsulta('<%= agendamento.protocolo %>')">Ir para atendimento</button>
+                                <button class="btnConfig" onclick="remarcarAgendamento('<%= agendamento.protocolo %>')">Remarcar agendamento</button>
+                                <button class="btnConfig" onclick="cancelarAgendamento('<%= agendamento.protocolo %>')">Cancelar agendamento</button>
+                            </section>
+                        </section>
+                    <% } %>
+                <% }); %>
+            </section>
+        <% } else { %>
+            <section class="no-agendamentos">
+                <p>Nenhum agendamento encontrado</p>
+            </section>
+        <% } %>
+        
+        <!-- Botão de novo agendamento sempre visível -->
+        <section id="btnAgendar">
+            <a href="/aluno/novoAgendamento"><button class="btnConfig">Novo agendamento</button></a>
+        </section>
+    </main>
+    <script>
+        function irParaConsulta(protocolo) {
+            // Abrir link do Zoom em uma nova aba
+            window.open(`https://zoom.us/j/${protocolo}`, '_blank');
+        }
+
+        function remarcarAgendamento(id) {
+            // Redirecionar para a página de edição do agendamento
+            window.location.href = `/aluno/agendamentos/${id}/editar`;
+        }
+
+        function cancelarAgendamento(id) {
+            // Exibir confirmação antes de cancelar
+            const confirmacao = confirm("Tem certeza que deseja cancelar este agendamento?");
+            if (confirmacao) {
+                // Fazer requisição para cancelar o agendamento
+                fetch(`/aluno/agendamentos/${id}/cancelar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Atualizar a página após o cancelamento bem-sucedido
+                        window.location.reload();
+                    } else {
+                        throw new Error('Erro ao cancelar agendamento');
+                    }
+                })
+                .catch(error => {
+                    alert('Erro ao cancelar agendamento. Por favor, tente novamente.');
+                    console.error('Erro:', error);
+                });
+            }
+        }
+    </script>
+  </body>
+</html>

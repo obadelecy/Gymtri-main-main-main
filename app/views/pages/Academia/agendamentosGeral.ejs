@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendamentos</title>
+  <link rel="stylesheet" href="/css/styleInterface.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main>
+    <section class="title">
+      <h1>Consulte a agenda da academia</h1>
+    </section>
+
+    <section id="blockConsultUser" class="consult">
+      <% agendamentos.forEach(ag => { %>
+        <section class="itemConsult">
+          <h4><%= ag.tipo %></h4>
+          <p><span>Nome(a):</span> <%= ag.nome %></p>
+          <p><span>Plano:</span> <%= ag.plano %></p>
+          <p><span>Situação:</span> <%= ag.situacao %></p>
+          <p><span>Data:</span> <%= ag.data %></p>
+          <p><span>Horário:</span> <%= ag.horario %></p>
+          <section id="btnConsult">
+            <button class="btnConfig">Visualizar perfil</button>
+            <button class="btnConfig" type="button">Cancelar agendamento</button>
+          </section>
+        </section>
+      <% }) %>
+      <% if (!agendamentos.length) { %>
+        <section class="notConsult">
+          <h4>Não há mais agendamentos.</h4>
+        </section>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>

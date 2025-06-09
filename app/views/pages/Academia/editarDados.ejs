@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar dados</title>
+  <link rel="stylesheet" href="/css/pag_academia.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main>
+    <div class="container">
+      <h2>Configure sua Academia</h2>
+
+      <div class="profile-pic-container">
+        <img id="profile-pic" src="<%= academia.foto || 'https://via.placeholder.com/100' %>" alt="Foto de Perfil">
+        <input type="file" id="file-input" accept="image/*" onchange="previewImage(event)">
+      </div>
+
+      <div class="form-group">
+        <label for="username">Nome da Academia</label>
+        <input type="text" id="username" value="<%= academia.nome %>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco" value="<%= academia.endereco %>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="contatos">Contatos</label>
+        <input type="text" id="contatos" value="<%= academia.contatos %>" required>
+      </div>
+
+      <div class="form-group">
+        <label for="missao">Missão da Academia</label>
+        <textarea id="text" rows="3"><%= academia.missao %></textarea>
+      </div>
+
+      <button onclick="saveProfile()">Salvar Alterações</button>
+    </div>
+  </main>
+
+  <script src="/js/pag_academia.js"></script>
+</body>
+</html>

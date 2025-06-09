@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus relatórios</title>
+    <link rel="stylesheet" href="/css/styleInterface.css">
+</head>
+<body>
+    <header>
+        <a href="/interfaceUsuario"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+        <nav id="menu">
+            <ul>
+                <li><a href="/aluno/buscarProfissional" class="navConfig">Buscar Profissional</a></li>
+                <li><a href="/aluno/buscarAcademia" class="navConfig">Buscar Academias</a></li>
+                <li><a href="/produtos" class="navConfig" target="_blank">Produtos</a></li>
+                <li><a href="/aluno/editarDados" class="navConfig">Editar Dados</a></li>
+                <li><a href="/" class="navConfig">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="title">
+            <h1>Consulte seus relatórios</h1>
+        </section>
+
+        <section id="blockReporttUser" class="consult">
+            <% if (relatorios && relatorios.length > 0) { %>
+                <% relatorios.forEach((relatorio, index) => { %>
+                    <section id="report<%= index + 1 %>" class="itemConsult">
+                        <h4><%= relatorio.titulo %></h4>
+                        <p><span>Profissional:</span> <%= relatorio.profissional %></p>
+                        <p><span>Data:</span> <%= relatorio.data %></p>
+                        <p><span>Horário:</span> <%= relatorio.horario %></p>
+                        <section id="btnConsult">
+                            <button class="btnConfig" type="button" onclick="visualizarRelatorio('<%= relatorio.id %>')">Visualizar</button>
+                            <button class="btnConfig" type="button" onclick="removerRelatorio('<%= relatorio.id %>')">Remover</button>
+                        </section>
+                    </section>
+                <% }); %>
+            <% } else { %>
+                <section id="item3" class="notConsult">
+                    <h4>Não há mais relatórios.</h4>
+                    <section id="btnAgendar">
+                        <a href="/aluno/novoAgendamento"><button class="btnConfig">Novo agendamento</button></a>
+                    </section>
+                </section>
+            <% } %>
+        </section>
+    </main>
+</body>
+</html>

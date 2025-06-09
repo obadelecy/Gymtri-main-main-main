@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar profissional</title>
+    <link rel="stylesheet" href="/css/styleInterface.css">
+</head>
+<body>
+    <header>
+        <a href="/interfaceUsuario"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+        <nav id="menu">
+            <ul>
+                <li><a href="/aluno/buscarProfissional" class="navConfig">Buscar Profissional</a></li>
+                <li><a href="/aluno/buscarAcademia" class="navConfig">Buscar Academias</a></li>
+                <li><a href="/produtos" class="navConfig" target="_blank">Produtos</a></li>
+                <li><a href="/aluno/editarDados" class="navConfig">Editar Dados</a></li>
+                <li><a href="/" class="navConfig">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="title">
+            <h1>Buscar profissional</h1>
+        </section>
+
+        <section class="search-container">
+            <div class="search-box">
+                <label class="labelAgend" for="searchInput">Buscar profissional</label>
+                <input type="text" 
+                       id="searchInput" 
+                       name="search" 
+                       placeholder="Digite o nome do profissional"
+                       autocomplete="off">
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+        </section>
+
+        <section id="profissionaisList" class="consult">
+            <% if (profissionais && profissionais.length > 0) { %>
+                <% profissionais.forEach(profissional => { %>
+                    <section class="itemConsult">
+                        <h4><%= profissional.nome %></h4>
+                        <p><span>Especialidade:</span> <%= profissional.especialidade %></p>
+                        <p><span>Registro:</span> <%= profissional.registro %></p>
+                        <div class="btnConsult">
+                            <a href="/aluno/novoAgendamento?profissional=<%= profissional.id %>" class="btnConfig">
+                                Novo Agendamento
+                            </a>
+                        </div>
+                    </section>
+                <% }); %>
+            <% } else { %>
+                <section class="no-results">
+                    <p>Nenhum profissional encontrado</p>
+                </section>
+            <% } %>
+        </section>
+    </main>
+    <style>
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+        .search-box {
+            position: relative;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .suggestion-item:hover, .suggestion-item.highlighted {
+            background-color: #f5f5f5;
+        }
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const suggestionsContainer = document.getElementById('suggestions');
+            let timeoutId;
+
+            // Função para buscar sugestões
+            async function fetchSuggestions(query) {
+                if (!query || query.length < 2) {
+                    suggestionsContainer.style.display = 'none';
+                    return [];
+                }
+
+                try {
+                    const response = await fetch(`/api/profissionais/buscar?termo=${encodeURIComponent(query)}`);
+                    if (!response.ok) throw new Error('Erro na busca');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Erro ao buscar sugestões:', error);
+                    return [];
+                }
+            }
+
+            // Função para exibir sugestões
+            function showSuggestions(suggestions) {
+                if (!suggestions || suggestions.length === 0) {
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+
+                suggestionsContainer.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.textContent = `${suggestion.nome} - ${suggestion.especialidade}`;
+                    div.addEventListener('click', () => {
+                        searchInput.value = suggestion.nome;
+                        suggestionsContainer.style.display = 'none';
+                        // Focar no primeiro resultado da busca
+                        filterProfissionais(suggestion.nome);
+                    });
+                    suggestionsContainer.appendChild(div);
+                });
+                suggestionsContainer.style.display = 'block';
+            }
+
+            // Função para filtrar profissionais na lista
+            function filterProfissionais(query) {
+                const profissionais = document.querySelectorAll('.itemConsult');
+                let hasResults = false;
+                
+                profissionais.forEach(prof => {
+                    const nome = prof.querySelector('h4').textContent.toLowerCase();
+                    if (nome.includes(query.toLowerCase())) {
+                        prof.style.display = '';
+                        hasResults = true;
+                    } else {
+                        prof.style.display = 'none';
+                    }
+                });
+
+                // Mostrar mensagem se não houver resultados
+                const noResults = document.querySelector('.no-results');
+                if (noResults) {
+                    noResults.style.display = hasResults ? 'none' : 'block';
+                }
+            }
+
+            // Event listeners
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(timeoutId);
+                const query = e.target.value.trim();
+                
+                if (query.length < 2) {
+                    // Se a busca for vazia, mostrar todos os profissionais
+                    document.querySelectorAll('.itemConsult').forEach(el => el.style.display = '');
+                    const noResults = document.querySelector('.no-results');
+                    if (noResults) noResults.style.display = 'none';
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+
+                timeoutId = setTimeout(async () => {
+                    const suggestions = await fetchSuggestions(query);
+                    showSuggestions(suggestions);
+                    filterProfissionais(query);
+                }, 300);
+            });
+
+            // Esconder sugestões ao clicar fora
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+
+            // Navegação por teclado
+            searchInput.addEventListener('keydown', (e) => {
+                const items = suggestionsContainer.querySelectorAll('.suggestion-item');
+                const highlighted = suggestionsContainer.querySelector('.highlighted');
+                let index = Array.from(items).indexOf(highlighted);
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (index < items.length - 1) {
+                        if (highlighted) highlighted.classList.remove('highlighted');
+                        items[index + 1].classList.add('highlighted');
+                        items[index + 1].scrollIntoView({ block: 'nearest' });
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (index > 0) {
+                        if (highlighted) highlighted.classList.remove('highlighted');
+                        items[index - 1].classList.add('highlighted');
+                        items[index - 1].scrollIntoView({ block: 'nearest' });
+                    }
+                } else if (e.key === 'Enter' && highlighted) {
+                    e.preventDefault();
+                    searchInput.value = highlighted.textContent.split(' - ')[0];
+                    suggestionsContainer.style.display = 'none';
+                    filterProfissionais(searchInput.value);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

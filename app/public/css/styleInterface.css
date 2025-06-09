@@ -1,0 +1,921 @@
+@import url('https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Hand:wght@400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:wght@200..700&family=Playwrite+NO:wght@100..400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Contrail+One&display=swap');
+
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    background-color: #00BFAE;
+    margin-bottom: 2em;
+}
+
+header a img {
+    margin-right: 2em;
+}
+
+#menuHamburguer, #menuHamb{
+    display: none;
+}
+
+nav {
+    width: 100%;
+    padding: 0.2em 0;
+    margin-right: 15px;
+}
+
+.navConfig{
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: #ffffff;
+    transition: 0.3s;
+    text-align: center;
+    display: flex;
+    padding: 1.4em 2em;
+}
+
+.navConfig:hover {
+    color: #607D8B;
+    transition: 0.3s;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    list-style-type: none;
+    margin-right: 5em;
+}
+
+nav ul li {
+    position: relative;
+}
+
+body {
+    background-color: #E0E0E0;
+    overflow-x: hidden;
+}
+
+main {
+    margin: 0 auto;
+    height: auto;
+}
+
+#searchProfessional form, #searchAcademy form, #newAgend {
+    width: 60%;
+    margin: 0 auto;
+}
+
+#blockInterface{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+}
+
+.blocksInterface img{
+    width: 40%;
+    margin-bottom: 1em;
+}
+
+.blocksInterface a{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.blocksInterface{
+    width: 65%;
+    height: auto;
+    margin: 2em auto;
+    border: 2px solid #00BFAE;
+    border-radius: 8%;
+    padding: 2em;
+    transition: 0.3s;
+}
+
+.blocksInterface:hover {
+    border: 2px solid #00BFAE;
+    transition: 0.3s;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px 1px #00BFAE;
+
+}
+
+.blocksInterface span a {
+    text-decoration: none;
+    color: #00BFAE;
+    font-weight: 600;
+    text-align: center;
+}
+
+.title{
+    text-align: center;
+    color: #00BFAE;
+    margin-bottom: 3em;
+}
+
+.consult {
+    display: grid;
+    grid-template-columns: 100%;
+    gap: 1em;
+    margin: 0 auto;
+    width: 60%;
+}
+
+.itemConsult {
+    padding: 1em;
+    color: #607D8B;
+    border: 1px solid #607D8B;
+    border-radius: 0.6em;
+    font-weight: 500;
+}
+
+.consult h4{
+    color: #00BFAE;
+    margin-bottom: 0.5em;
+}
+
+.consult section p{
+    margin-bottom: 0.5em;
+}
+
+.itemConsult span {
+    color: #00BFAE;
+    font-weight: 500;
+}
+
+.consult #item3 {
+    border: 0px;
+    text-align: center;
+    margin: 6em 0;
+    padding: 2em;
+}
+
+#btnAgendar {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+}
+
+#btnAgendar button {
+    background-color: #00BFAE;
+    border: 1px solid #607D8B;
+    border-radius: 1em;
+    color: #ffffff;
+    padding: 0.8em 2em;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#btnAgendar button:hover {
+    background-color: #607D8B;
+    border: 1px solid #607D8B;
+}
+
+.consult #item3 h4 {
+    color: #00BFAE;
+}
+
+#btnConsult {
+    width: 100%;
+}
+
+.btnConsult{
+    margin-top: 1em;
+}
+
+.btnConsult a{
+    text-decoration: none;
+}
+
+.btnConfig{
+    margin: 1em 1em 0 0;
+    background-color: #00BFAE;
+    border: 1px solid #607D8B;
+    border-radius: 1em;
+    color: #ffffff;
+    padding: 0.5em;
+    font-size: 1em;
+    text-decoration: none;
+}
+
+.btnConfig:hover{
+    color: #ffffff;
+    background-color: #607D8B;
+    border: 1px solid #607D8B;
+    cursor: pointer;
+}
+
+.labelAgend{
+    color: #00BFAE;
+    font-size: 1.6em;
+    font-weight: 400;
+}
+
+input{
+    background-color: #ffffff;
+    border: 2px solid #00BFAE;
+    border-radius: 1.2em;
+    padding: 1em;
+    margin: 1em 0;
+    width: 100%;
+    color: #607D8B;
+    transition: 0.3s;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+select {
+    background-color: #ffffff;
+    border: 2px solid #00BFAE;
+    border-radius: 1.2em;
+    padding: 1em;
+    margin: 1em 0;
+    width: 100%;
+    color: #607D8B;
+    transition: 0.3s;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+textarea{
+    width: 100%;
+    height: 100px;
+    border: 2px solid #00BFAE;
+    border-radius: 1.2em;
+    font-size: 1em;
+    padding: 0.5em;
+}
+
+.btnAgend{
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    margin-bottom: 2em;
+}
+
+#pendingBlock{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#labelPending{
+    margin-left: 4em;
+    color: #00BFAE;
+    font-size: 1.6em;
+}
+#btnPending {
+    padding: 1em;
+    margin: 0 1em;
+    background-color: #00BFAE;
+    border: 2px solid #607D8B;
+    border-radius: 1.2em;
+    font-size: 1em;
+    color: #ffffff;
+}
+
+#btnPending:hover {
+    color: #ffffff;
+    transition: 0.3s;
+    background-color: #607D8B;
+    border: 2px solid #607D8B;
+    cursor: pointer;
+}
+
+#search{
+    margin-left: 6em;
+    width: 60%;
+}
+
+#h1Text{
+    color: #00BFAE;
+    font-size: 1.6em;
+    margin: 2em 1em;
+}
+
+.configText{
+    color: #00BFAE;
+    font-size: 1.2em;
+}
+
+.blockText{
+    color: #607D8B;
+    margin: 1em 1.5em;
+    font-weight: 500;
+}
+
+#h3Text{
+    color: #00BFAE;
+    font-size: 1.6em;
+    margin: 1em;
+}
+
+.no-agendamentos {
+    text-align: center;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+.status-pending { color: #f39c12; }
+.status-confirmed { color: #00BFAE; }
+.status-cancelled { color: #e74c3c; }
+
+.status-badge {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 424px) {
+    header {
+        padding: 0.5em;
+    }
+    
+    #menu{
+        display: none;
+    }
+
+    /* Checkbox invisível */
+    #menuHamburguer {
+        position: absolute;
+        opacity: 0;
+    }
+
+    /* Ícone do Menu Hambúrguer */
+    .menuBtn {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .menuBtn span {
+        width: 30px;
+        height: 4px;
+        background-color: #FFFFFF;
+        margin: 5px 0;
+        transition: 0.3s;
+        border-radius: 30px;
+    }
+
+    /* Estilizando o menu */
+    #menuHamb {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 250px;
+        height: 100vh;
+        background-color: #00BFAE;
+        padding-top: 60px;
+        transition: left 0.3s ease-in-out;
+    }
+
+    #menuHamb ul {
+        list-style: none;
+        text-align: center;
+    }
+
+    #menuHamb ul li {
+        padding: 10px 0;
+    }
+
+    #menuHamb ul li a {
+        color: #FFF;
+        text-decoration: none;
+        font-size: 1em;
+    }
+
+    /* O menu será exibido quando o checkbox for marcado */
+    #menuHamburguer:checked+.menuBtn+#menuHamb {
+        left: 0 !important;
+        display: block !important;
+    }
+
+    /* Efeito no ícone do menu */
+    #menuHamburguer:checked+.menuBtn span:nth-child(1) {
+        transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    #menuHamburguer:checked+.menuBtn span:nth-child(2) {
+        opacity: 0;
+    }
+
+    #menuHamburguer:checked+.menuBtn span:nth-child(3) {
+        transform: rotate(-45deg) translate(11px, -11px);
+    }
+
+    #blockInterface{
+        grid-template-columns: 100%;
+    }
+
+    .blocksInterface img{
+        width: 70%;
+        margin: 0.5em auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .blocksInterface{
+        width: 50%;
+        margin: 2em auto;
+        padding: 2em;
+    }
+
+    .blocksInterface span a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    input{
+        font-size: 0.8em;
+    }
+
+    select{
+        font-size: 0.8em;
+    }
+
+    textarea{
+        font-size: 0.8em;
+    }
+
+    #h3Text{
+        font-size: 1em;
+    }
+
+    .labelAgend{
+        font-size: 1.1em;
+    }
+
+    #btnConsult{
+        width: 70%;
+        margin: auto;
+    }
+
+    .btnConfig {
+        margin: 0.4em 0;
+        width: 100%;
+        font-size: 0.9em;
+        text-align: center;
+    }
+
+    .btnAgend{
+        justify-content: center;
+    }
+
+}
+
+@media (min-width: 425px) and (max-width: 630px){
+    header {
+        padding: 0.5em;
+    }
+    
+    #menu{
+        display: none;
+    }
+
+    /* Checkbox invisível */
+    #menuHamburguer {
+        position: absolute;
+        opacity: 0;
+    }
+
+    /* Ícone do Menu Hambúrguer */
+    .menuBtn {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .menuBtn span {
+        width: 30px;
+        height: 4px;
+        background-color: #FFFFFF;
+        margin: 5px 0;
+        transition: 0.3s;
+        border-radius: 30px;
+    }
+
+    /* Estilizando o menu */
+    #menuHamb {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 250px;
+        height: 100vh;
+        background-color: #00BFAE;
+        padding-top: 60px;
+        transition: left 0.3s ease-in-out;
+    }
+
+    #menuHamb ul {
+        list-style: none;
+        text-align: center;
+    }
+
+    #menuHamb ul li {
+        padding: 10px 0;
+    }
+
+    #menuHamb ul li a {
+        color: #FFF;
+        text-decoration: none;
+        font-size: 1em;
+    }
+
+    /* O menu será exibido quando o checkbox for marcado */
+    #menuHamburguer:checked+.menuBtn+#menuHamb {
+        left: 0 !important;
+        display: block !important;
+    }
+
+    /* Efeito no ícone do menu */
+    #menuHamburguer:checked+.menuBtn span:nth-child(1) {
+        transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    #menuHamburguer:checked+.menuBtn span:nth-child(2) {
+        opacity: 0;
+    }
+
+    #menuHamburguer:checked+.menuBtn span:nth-child(3) {
+        transform: rotate(-45deg) translate(11px, -11px);
+    }
+
+    #blockInterface{
+        grid-template-columns: 50% 50%;
+    }
+
+    .blocksInterface img{
+        width: 70%;
+        margin: 0.5em auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .blocksInterface{
+        width: 70%;
+        margin: 2em auto;
+        padding: 2em;
+    }
+
+    .blocksInterface span a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+        input{
+        font-size: 0.8em;
+    }
+
+    select{
+        font-size: 0.8em;
+    }
+
+    textarea{
+        font-size: 0.8em;
+    }
+
+    #h3Text{
+        font-size: 1em;
+    }
+
+    .labelAgend{
+        font-size: 1.1em;
+    }
+
+    #btnConsult{
+        width: 60%;
+        margin: auto;
+    }
+
+    .btnConfig {
+        margin: 0.4em 0;
+        width: 85%;
+        font-size: 0.9em;
+        text-align: center;
+    }
+
+    .btnAgend{
+        justify-content: center;
+    }
+}
+
+@media (min-width: 631px) and (max-width: 814px){
+    header {
+        padding: 0.5em;
+    }
+    
+    #menu{
+        display: none;
+    }
+
+    /* Checkbox invisível */
+    #menuHamburguer {
+        position: absolute;
+        opacity: 0;
+    }
+
+    /* Ícone do Menu Hambúrguer */
+    .menuBtn {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .menuBtn span {
+        width: 30px;
+        height: 4px;
+        background-color: #FFFFFF;
+        margin: 5px 0;
+        transition: 0.3s;
+        border-radius: 30px;
+    }
+
+    /* Estilizando o menu */
+    #menuHamb {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 250px;
+        height: 100vh;
+        background-color: #00BFAE;
+        padding-top: 60px;
+        transition: left 0.3s ease-in-out;
+    }
+
+    #menuHamb ul {
+        list-style: none;
+        text-align: center;
+    }
+
+    #menuHamb ul li {
+        padding: 10px 0;
+    }
+
+    #menuHamb ul li a {
+        color: #FFF;
+        text-decoration: none;
+        font-size: 1em;
+    }
+
+    /* O menu será exibido quando o checkbox for marcado */
+    #menuHamburguer:checked+.menuBtn+#menuHamb {
+        left: 0 !important;
+        display: block !important;
+    }
+
+    /* Efeito no ícone do menu */
+    #menuHamburguer:checked+.menuBtn span:nth-child(1) {
+        transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    #menuHamburguer:checked+.menuBtn span:nth-child(2) {
+        opacity: 0;
+    }
+
+    #menuHamburguer:checked+.menuBtn span:nth-child(3) {
+        transform: rotate(-45deg) translate(11px, -11px);
+    }
+
+    .blocksInterface img{
+        width: 70%;
+        margin: 0.5em auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .blocksInterface{
+        width: 70%;
+        margin: 2em auto;
+        padding: 2em;
+    }
+
+    .blocksInterface span a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    input{
+        font-size: 0.8em;
+    }
+
+    select{
+        font-size: 0.8em;
+    }
+
+    textarea{
+        font-size: 0.8em;
+    }
+
+    #h3Text{
+        font-size: 1em;
+    }
+
+    .labelAgend{
+        font-size: 1.1em;
+    }
+
+    #btnConsult{
+        width: 45%;
+        margin: auto;
+    }
+
+    .btnConfig {
+        margin: 0.4em 0;
+        width: 85%;
+        font-size: 0.9em;
+        text-align: center;
+    }
+
+    .btnAgend{
+        justify-content: center;
+    }
+}
+
+@media (min-width: 815px) and (max-width: 1024px) {
+
+    .navConfig{
+        font-size: 0.9em;
+        padding: 1.4em 0.9em;
+        letter-spacing: 0;
+    }
+
+    header {
+        padding: 0.5em;
+    }
+    
+    #menu{
+        display: block;
+    }
+
+    .blocksInterface img{
+        width: 70%;
+        margin: 0.5em auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .blocksInterface{
+        width: 70%;
+        margin: 2em auto;
+        padding: 2em;
+    }
+
+    .blocksInterface span a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    input{
+        font-size: 0.8em;
+    }
+
+    select{
+        font-size: 0.8em;
+    }
+
+    textarea{
+        font-size: 0.8em;
+    }
+
+    #h3Text{
+        font-size: 1em;
+    }
+
+    .labelAgend{
+        font-size: 1.1em;
+    }
+
+    #btnConsult{
+        width: 40%;
+        margin: auto;
+    }
+
+    .btnConfig {
+        margin: 0.4em 0;
+        width: 85%;
+        font-size: 1em;
+        text-align: center;
+    }
+
+    .btnAgend{
+        justify-content: center;
+    }
+
+}
+
+@media (min-width: 1024px) and (max-width: 1308px) {
+
+    .navConfig{
+        font-size: 1.1em;
+        padding: 1.4em 1em;
+        letter-spacing: 0;
+    }
+
+    header {
+        padding: 0.5em;
+    }
+    
+    #menu{
+        display: block;
+    }
+
+    .blocksInterface img{
+        width: 70%;
+        margin: 0.5em auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .blocksInterface{
+        width: 70%;
+        margin: 2em auto;
+        padding: 2em;
+    }
+
+    .blocksInterface span a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    input{
+        font-size: 0.8em;
+    }
+
+    select{
+        font-size: 0.8em;
+    }
+
+    textarea{
+        font-size: 0.8em;
+    }
+
+    #h3Text{
+        font-size: 1em;
+    }
+
+    .labelAgend{
+        font-size: 1.1em;
+    }
+
+    #btnConsult{
+        width: 35%;
+        margin: auto;
+    }
+
+    .btnConfig {
+        margin: 0.4em 0;
+        width: 85%;
+        font-size: 1em;
+        text-align: center;
+    }
+
+    .btnAgend{
+        justify-content: center;
+    }
+
+    
+}

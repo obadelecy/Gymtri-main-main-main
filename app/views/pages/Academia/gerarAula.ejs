@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerar aula</title>
+  <link rel="stylesheet" href="/css/styleInterface.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <main>
+    <section class="title">
+      <h1>Gerar aula</h1>
+    </section>
+
+    <form method="POST" action="/gerar-aula">
+      <section>
+        <label class="labelAgend" for="classroom">Aula</label>
+        <input type="text" name="classroom" id="classroom">
+      </section>
+      <section>
+        <label class="labelAgend" for="professionalClassroom">Profissional</label>
+        <select name="professionalClassroom" id="professionalClassroom">
+          <option value="">Selecione o profissional</option>
+          <% profissionais.forEach(prof => { %>
+            <option value="<%= prof.nome %>"><%= prof.nome %></option>
+          <% }) %>
+        </select>
+      </section>
+      <section>
+        <label class="labelAgend" for="limit">Vagas</label>
+        <input type="number" name="limit" id="limit">
+      </section>
+      <section>
+        <label class="labelAgend" for="date">Data</label>
+        <input type="date" name="date" id="date">
+      </section>
+      <section>
+        <label class="labelAgend" for="hours">Horário</label>
+        <input type="time" name="hours" id="hours">
+      </section>
+      <section class="btnAgend">
+        <button class="btnConfig">Gerar aula</button>
+      </section>
+    </form>
+  </main>
+</body>
+</html>

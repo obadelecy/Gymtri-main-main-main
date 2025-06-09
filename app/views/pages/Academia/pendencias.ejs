@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendências</title>
+    <link rel="stylesheet" href="/public/css/styleInterface.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <section class="title">
+            <h1>Verificar pendências</h1>
+        </section>
+
+        <form action="/pendencias" method="GET">
+            <section id="pendingBlock">
+                <label id="labelPending" for="search">Digite o nome ou CPF do aluno</label>
+                <input type="text" name="search" id="search" placeholder="Nome ou CPF do aluno">
+                <button id="btnPending">Buscar aluno</button>
+            </section>
+        </form>
+
+        <section id="blockConsultUser" class="consult">
+            <% pendencias.forEach(function(pendencia) { %>
+                <section class="itemConsult">
+                    <h4><%= pendencia.tipo %></h4>
+                    <p><span>Nome(a):</span> <%= pendencia.nome %></p>
+                    <p><span>Plano:</span> <%= pendencia.plano %></p>
+                    <p><span>Situação:</span> <%= pendencia.situacao %></p>
+                    <p><span>Pendências:</span> <%= pendencia.descricao %></p>
+                    <p><span>Data:</span> <%= pendencia.data %></p>
+                    <p><span>Horário:</span> <%= pendencia.horario %></p>
+
+                    <section id="btnConsult">
+                        <button class="btnConfig">Visualizar perfil</button>
+                        <button class="btnConfig" type="button">Editar</button>
+                    </section>
+                </section>
+            <% }) %>
+
+            <% if(pendencias.length === 0) { %>
+                <section class="notConsult">
+                    <h4>Não há mais agendamentos.</h4>
+                </section>
+            <% } %>
+        </section>
+    </main>
+</body>
+</html>

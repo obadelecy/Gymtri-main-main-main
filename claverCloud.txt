@@ -1,0 +1,6 @@
+DB_HOST = byzihpsq1ucgmlrljnz1-mysql.services.clever-cloud.com
+DB_USER = ucg5io6tttpgelhp
+DB_PASSWORD = pXhSgJUazOz7sMpD1wo9
+DB_NAME = byzihpsq1ucgmlrljnz1
+DB_PORT = 3306
+DB_APP = 3000

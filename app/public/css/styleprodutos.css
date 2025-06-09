@@ -1,0 +1,308 @@
+@import url('https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Hand:wght@400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:wght@200..700&family=Playwrite+NO:wght@100..400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Contrail+One&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    background-color: #00BFAE;
+}
+
+header img {
+    margin-right: 2em;
+}
+
+/* Barra da Navegação */
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2em;
+}
+
+header img {
+    width: 80px;
+}
+
+nav {
+    width: 100%;
+    padding: 0.2em 0;
+    margin-right: 15px;
+}
+
+.navConfig {
+    text-decoration: none;
+    font-size: 1em;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: #ffffff;
+    transition: 0.3s;
+    text-align: center;
+    display: flex;
+    padding: 1em 1em;
+}
+
+.navConfig:hover {
+    color: #607D8B;
+    transition: 0.3s;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    list-style-type: none;
+    margin-right: 1em;
+}
+
+.hrMenu {
+    border-color: #FFFFFF;
+}
+
+#menu2 {
+    width: 55%;
+}
+
+#menu2 ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: right;
+}
+
+#menu2 ul li{
+    width: 35%;
+}
+
+#menu2 ul li a{
+    display: block;
+}
+
+#linkRegister {
+    background-color: #607D8B;
+    color: #ffffff;
+    border-radius: 1em;
+}
+
+#linkRegister:hover{
+    background-color: #FFFFFF;
+    color: #607D8B;
+}
+
+body {
+    background-color: #E0E0E0; 
+    color: #fff; 
+}
+
+/* Estilo da grade de produtos */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Estilo de cada produto */
+.product {
+    background-color: #fff; /* Fundo branco para os produtos */
+    border: 1px solid #ddd; /* Borda suave */
+    border-radius: 8px;
+    text-align: center;
+    padding: 15px;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Efeito de aumento na imagem do produto */
+.product img {
+    width: 100px; 
+    height: auto;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out; 
+}
+
+/* Texto dentro do produto */
+.product h3, h5 {
+    margin: 10px 0;
+    color: #161515; 
+}
+
+/* Botão de compra */
+.buy-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00bfae; 
+    color: #222020; 
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1em;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.buy-button:hover {
+    background-color: #00bfae; 
+}
+
+/* Carrossel */
+.carousel {
+    position: relative;
+    width: 100%;
+    max-width: auto; 
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+/* Imagem do carrossel */
+.carousel-image {
+    width: 100%;
+    display: none; /* Oculta as imagens inicialmente */
+}
+
+/* Imagem ativa no carrossel */
+.carousel-image.active {
+    display: block; 
+}
+
+/* Botões de navegação do carrossel */
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo semitransparente */
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Botão anterior */
+.carousel-button.prev {
+    left: 10px;
+}
+
+/* Botão próximo */
+.carousel-button.next {
+    right: 10px;
+}
+
+/* Efeito de hover nos botões de navegação do carrossel */
+.carousel-button:hover {
+    background-color: rgba(0, 0, 0, 0.8); 
+}
+
+/* Link que envolve a imagem */
+.carousel-link {
+    display: block; 
+    width: 100%;
+}
+
+/* Animação de pulsação nos produtos */
+.product.pulse {
+    animation: pulse-animation 0.8s infinite; 
+}
+
+@keyframes pulse-animation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05); 
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Efeito de aumento nas imagens dos produtos */
+.product img:hover {
+    transform: scale(1.2); 
+}
+
+/* Efeito de suavização nos produtos */
+.product:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: 1fr; 
+    }
+}
+
+/* Esconde o botão do menu hamburguer em telas grandes */
+.menu-hamburguer {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 30px;
+    color: #00bfae;
+    cursor: pointer;
+}
+
+/* Esconde o menu padrão em telas menores */
+@media screen and (max-width: 1024px) {
+    .menu-hamburguer {
+        display: block; /* Exibe o menu hamburguer */
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+
+    nav {
+        display: none;
+        flex-direction: column;
+        background-color: #252423;
+        width: 100%;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        padding: 1em;
+        text-align: center;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    nav ul li {
+        width: 100%;
+        padding: 10px 0;
+    }
+
+    nav ul li a {
+        font-size: 18px;
+        padding: 10px 0;
+        display: block;
+    }
+
+    /* Mostra o menu ao clicar */
+    .menu-aberto {
+        display: flex;
+    }
+}

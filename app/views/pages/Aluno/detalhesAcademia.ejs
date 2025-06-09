@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= academia.nome || 'Detalhes da Academia' %></title>
+    <link rel="stylesheet" href="/css/styleInterface.css">
+    <style>
+        .academia-detalhes {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .academia-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .academia-header h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .academia-info {
+            margin-bottom: 2rem;
+        }
+        .info-item {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+        }
+        .info-item span:first-child {
+            font-weight: bold;
+            min-width: 120px;
+            display: inline-block;
+            color: #555;
+        }
+        .btn-voltar {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        .btn-voltar:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/interfaceUsuario"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+        <nav id="menu">
+            <ul>
+                <li><a href="/aluno/buscarProfissional" class="navConfig">Buscar Profissional</a></li>
+                <li><a href="/aluno/buscarAcademia" class="navConfig">Buscar Academias</a></li>
+                <li><a href="/produtos" class="navConfig" target="_blank">Produtos</a></li>
+                <li><a href="/aluno/editarDados" class="navConfig">Editar Dados</a></li>
+                <li><a href="/" class="navConfig">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="academia-detalhes">
+            <div class="academia-header">
+                <h1><%= academia.NOME || 'Academia' %></h1>
+                <p>Informações detalhadas</p>
+            </div>
+            
+            <div class="academia-info">
+                <% if (academia.CNPJ) { %>
+                    <div class="info-item">
+                        <span>CNPJ:</span>
+                        <span><%= academia.CNPJ %></span>
+                    </div>
+                <% } %>
+                
+                <div class="info-item">
+                    <span>Endereço:</span>
+                    <span>
+                        <%= academia.RUA || '' %>,
+                        <%= academia.NUMERO || '' %>
+                        <%= academia.COMPLEMENTO ? ' - ' + academia.COMPLEMENTO : '' %><br>
+                        <%= academia.BAIRRO || '' %><br>
+                        <%= academia.CIDADE || '' %> - <%= academia.UF || '' %><br>
+                        CEP: <%= academia.CEP || '' %>
+                    </span>
+                </div>
+
+                <% if (academia.TELEFONE) { %>
+                    <div class="info-item">
+                        <span>Telefone:</span>
+                        <span><%= academia.TELEFONE %></span>
+                    </div>
+                <% } %>
+
+                <% if (academia.EMAIL) { %>
+                    <div class="info-item">
+                        <span>E-mail:</span>
+                        <span><%= academia.EMAIL %></span>
+                    </div>
+                <% } %>
+            </div>
+
+            
+            <a href="/aluno/buscarAcademia" class="btn-voltar">
+                &larr; Voltar para a lista
+            </a>
+        </div>
+    </main>
+</body>
+</html>
