@@ -138,7 +138,7 @@
                 
                 <div class="profile-pic-container">
                     <img id="profilePic" class="profile-pic" 
-                         src="<%= usuario && usuario.FOTO ? usuario.FOTO : '/img/default-avatar.png' %>" 
+                         src="<%= aluno && aluno.FOTO ? aluno.FOTO : '/img/default-avatar.png' %>" 
                          alt="Foto de Perfil">
                     <div class="file-input-wrapper">
                         <button class="btn btn-primary">Alterar Foto</button>
@@ -149,19 +149,19 @@
                 <div class="form-group">
                     <label for="nomeCompleto">Nome Completo</label>
                     <input type="text" id="nomeCompleto" class="form-control" 
-                           value="<%= usuario && usuario.NOME_COMPLETO ? usuario.NOME_COMPLETO : '' %>" required>
+                           value="<%= aluno && aluno.NOME_COMPLETO ? aluno.NOME_COMPLETO : '' %>" required>
                 </div>
 
                 <div class="form-group">
                     <label for="email">E-mail</label>
                     <input type="email" id="email" class="form-control" 
-                           value="<%= usuario && usuario.EMAIL ? usuario.EMAIL : '' %>" required>
+                           value="<%= aluno && aluno.EMAIL ? aluno.EMAIL : '' %>" required>
                 </div>
 
                 <div class="form-group">
                     <label for="telefone">Telefone</label>
                     <input type="tel" id="telefone" class="form-control" 
-                           value="<%= usuario && usuario.TELEFONE ? usuario.TELEFONE : '' %>" required>
+                           value="<%= aluno && aluno.TELEFONE ? aluno.TELEFONE : '' %>" required>
                 </div>
 
                 <button id="btnSalvarDados" class="btn btn-primary">Salvar Dados</button>

@@ -109,21 +109,12 @@ const alunoController = {
         NUMERO: numero,
         COMPLEMENTO: complemento || null,
         CPF: cpfRegister.replace(/[\D]/g, ''), // Remove formatação do CPF
-        DATA_NASCIMENTO: dataNasc || null,
+        DATA_DE_NASCIMENTO: dataNasc || null,
         // Campos opcionais de cartão
-        CARTAO_NUMERO: numberCardRegister || null,
-        CARTAO_NOME: nameCardRegister || null,
-        CARTAO_VALIDADE: validityDate || null,
-        CARTAO_CVV: cvvValidation || null,
-        PLANO: plans || 'Gratuito',
-        DATA_CRIACAO: new Date(),
-        DATA_ATUALIZACAO: new Date(),
         CVV: cvvValidation || null,
         NUMERO_DO_CARTAO: numberCardRegister || null,
-        NUMERO: numero,
         NOME_CARTAO: nameCardRegister,
         RUA: rua,
-        UF: uf,
         VALIDADE: validityDate
       };
 

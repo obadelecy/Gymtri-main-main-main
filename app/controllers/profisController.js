@@ -38,7 +38,7 @@ const profisController = {
         // Validar se todos os campos obrigatórios existem e não estão vazios
         const camposObrigatorios = ['fullname', 'emailRegister', 'passwordRegister', 'numberRegister', 'numberDoc'];
         const erros = camposObrigatorios.map(campo => {
-            if (!dados[campo] || dados[campo].trim() === '') {
+            if (!dados[campo]) {
                 return `Campo ${campo} é obrigatório.`;
             }
             return null;

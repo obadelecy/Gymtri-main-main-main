@@ -80,14 +80,16 @@ router.get('/editarDados', verificarUsuAutenticado, async (req, res) => {
     const alunoModel = require('../models/alunoModel');
     const aluno = await alunoModel.findById(req.session.autenticado.id);
     
-    if (!aluno || aluno.length === 0) {
+    if (!aluno) {
       console.log('Aluno não encontrado no banco de dados');
       req.flash('error', 'Usuário não encontrado');
       return res.redirect('/login');
     }
     
+    console.log('Dados do aluno encontrados:', aluno); // Log para debug
+    
     res.render("pages/Aluno/editarDados", { 
-      usuario: aluno[0],
+      aluno: aluno,  // Passando o objeto aluno diretamente
       flash: req.flash() || {}
     });
   } catch (error) {
@@ -109,7 +111,8 @@ router.post('/atualizarDados', verificarUsuAutenticado, async (req, res) => {
     const alunoModel = require('../models/alunoModel');
     
     // Buscar aluno atual
-    const [aluno] = await alunoModel.findById(req.session.autenticado.id);
+    const aluno = await alunoModel.findById(req.session.autenticado.id);
+    console.log('Dados do aluno encontrados para atualização:', aluno);
     
     if (!aluno) {
       console.log('Aluno não encontrado com ID:', req.session.autenticado.id);
@@ -144,7 +147,12 @@ router.post('/atualizarDados', verificarUsuAutenticado, async (req, res) => {
     aluno.TELEFONE = telefone || aluno.TELEFONE;
     
     // Atualizar no banco de dados
-    await alunoModel.update(aluno, req.session.autenticado.id);
+    const updateResult = await alunoModel.update(aluno, req.session.autenticado.id);
+    console.log('Resultado da atualização:', updateResult);
+    
+    if (!updateResult) {
+      throw new Error('Falha ao atualizar os dados no banco de dados');
+    }
     
     // Atualizar dados na sessão
     req.session.autenticado = {
@@ -212,7 +220,7 @@ router.post('/excluirConta', verificarUsuAutenticado, async (req, res) => {
     
     // Busca os dados do aluno
     console.log('Buscando dados do aluno com CPF:', cpf);
-    const [aluno] = await alunoModel.findById(cpf);
+    const aluno = await alunoModel.findById(cpf);
     
     if (!aluno) {
       const errorMsg = `Usuário não encontrado para o CPF: ${cpf}`;
@@ -223,6 +231,12 @@ router.post('/excluirConta', verificarUsuAutenticado, async (req, res) => {
         errorCode: 'USER_NOT_FOUND'
       });
     }
+    
+    console.log('Dados do aluno encontrado:', {
+      nome: aluno.NOME_COMPLETO,
+      email: aluno.EMAIL,
+      cpf: aluno.CPF
+    });
     
     console.log('Dados do aluno encontrado:', {
       nome: aluno.NOME_COMPLETO,

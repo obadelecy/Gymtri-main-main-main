@@ -1,18 +1,73 @@
 const pool = require("../../config/pool_conexoes");
 
-// Função auxiliar para executar queries com tratamento de conexão
-async function executeQuery(query, params = []) {
+// Função auxiliar para executar queries com tratamento de conexão e reconexão
+async function executeQuery(query, params = [], maxRetries = 3) {
     let connection;
-    try {
-        connection = await pool.getConnection();
-        const [rows] = await connection.query(query, params);
-        return rows;
-    } catch (error) {
-        console.error('Database query error:', error);
-        throw error;
-    } finally {
-        if (connection) connection.release();
+    let retryCount = 0;
+    const retryDelay = 1000; // 1 segundo
+    
+    while (retryCount < maxRetries) {
+        try {
+            // Obter uma nova conexão do pool
+            connection = await pool.getConnection();
+            
+            // Verificar se a conexão ainda está ativa
+            await connection.ping();
+            
+            // Executar a query
+            const [rows] = await connection.query(query, params);
+            
+            // Liberar a conexão de volta para o pool
+            if (connection) {
+                connection.release();
+            }
+            
+            return rows;
+            
+        } catch (error) {
+            // Se a conexão foi perdida, vamos tentar novamente
+            if (error.code === 'ECONNRESET' || error.code === 'PROTOCOL_CONNECTION_LOST' || error.code === 'ETIMEDOUT') {
+                retryCount++;
+                console.warn(`Tentativa ${retryCount}/${maxRetries} - Reconectando ao banco de dados...`);
+                
+                // Aguardar um pouco antes de tentar novamente
+                if (retryCount < maxRetries) {
+                    await new Promise(resolve => setTimeout(resolve, retryDelay * retryCount));
+                }
+                
+                // Se ainda tivermos tentativas, continue o loop
+                continue;
+            }
+            
+            // Para outros erros, logue e lance a exceção
+            console.error('Erro na execução da query:', {
+                query,
+                params,
+                error: {
+                    code: error.code,
+                    errno: error.errno,
+                    sqlState: error.sqlState,
+                    sqlMessage: error.sqlMessage,
+                    message: error.message,
+                    stack: error.stack
+                }
+            });
+            
+            throw error;
+            
+        } finally {
+            // Garantir que a conexão seja liberada em caso de erro
+            if (connection && connection.release) {
+                try {
+                    connection.release();
+                } catch (releaseError) {
+                    console.error('Erro ao liberar conexão:', releaseError);
+                }
+            }
+        }
     }
+    
+    throw new Error(`Não foi possível executar a query após ${maxRetries} tentativas`);
 }
 
 const alunoModel = {
@@ -71,7 +126,7 @@ const alunoModel = {
     findById: async (id) => {
         try {
             const resultado = await executeQuery(
-                'SELECT * FROM aluno WHERE CPF = ?',
+                'SELECT * FROM ALUNO WHERE CPF = ?',
                 [id]
             );
             return resultado[0] || null;

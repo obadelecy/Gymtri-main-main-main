@@ -217,9 +217,9 @@
             document.getElementById('registerAcademia').style.display = 'none';
             document.getElementById('registerProfissional').style.display = 'none';
 
-
             document.getElementById('register' + formType.charAt(0).toUpperCase() + formType.slice(1)).style.display = 'block';
         }
+        window.showForm = showForm;
 
         function mascaraCEP(event) {
             let cep = event.target.value;
@@ -341,81 +341,129 @@
         }
 
         // Função para lidar com o envio do formulário via AJAX
-        async function handleFormSubmit(form, formData, successMessage) {
-            try {
-                // Cria um objeto com todos os campos do formulário
-                const formDataObj = {
-                    fullname: form.querySelector('[name="fullname"]').value,
-                    emailRegister: form.querySelector('[name="emailRegister"]').value,
-                    passwordRegister: form.querySelector('[name="passwordRegister"]').value,
-                    passwordRegisterConfirm: form.querySelector('[name="passwordRegisterConfirm"]').value,
-                    numberRegister: form.querySelector('[name="numberRegister"]').value,
-                    cpfRegister: form.querySelector('[name="cpfRegister"]').value,
-                    cep: form.querySelector('[name="cep"]').value,
-                    rua: form.querySelector('[name="rua"]').value,
-                    bairro: form.querySelector('[name="bairro"]').value,
-                    cidade: form.querySelector('[name="cidade"]').value,
-                    uf: form.querySelector('[name="uf"]').value,
-                    numero: form.querySelector('[name="numero"]').value,
-                    complemento: form.querySelector('[name="complemento"]').value || '',
-                    dataNasc: form.querySelector('[name="dataNasc"]') ? form.querySelector('[name="dataNasc"]').value : '',
-                    plans: form.querySelector('[name="plans"]') ? form.querySelector('[name="plans"]').value : '',
-                    numberCardRegister: form.querySelector('[name="numberCardRegister"]') ? form.querySelector('[name="numberCardRegister"]').value : '',
-                    nameCardRegister: form.querySelector('[name="nameCardRegister"]') ? form.querySelector('[name="nameCardRegister"]').value : '',
-                    validityDate: form.querySelector('[name="validityDate"]') ? form.querySelector('[name="validityDate"]').value : '',
-                    cvvValidation: form.querySelector('[name="cvvValidation"]') ? form.querySelector('[name="cvvValidation"]').value : ''
-                };
-
-                // Remove campos vazios
-                Object.keys(formDataObj).forEach(key => {
-                    if (formDataObj[key] === '') {
-                        delete formDataObj[key];
-                    }
-                });
-
-                let url = form.action;
-                if (form.id === 'formAluno') {
-                    url = '/aluno';
-                } else if (form.id === 'formAcademia') {
-                    url = '/academia';
-                } else if (form.id === 'formProfissional') {
-                    url = '/profissional';
-                }
-
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams(formDataObj).toString()
-                });
-
-                // Tenta obter a resposta como JSON, mas lida com respostas de texto também
-                let result;
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    result = await response.json();
-                } else {
-                    const text = await response.text();
-                    try {
-                        result = JSON.parse(text);
-                    } catch (e) {
-                        result = { message: text };
-                    }
-                }
-                
-                if (response.ok) {
-                    showNotificationAndRedirect(true, successMessage);
-                } else {
-                    showNotificationAndRedirect(false, result.message || 'Ocorreu um erro ao processar seu cadastro.');
-                }
-            } catch (error) {
-                console.error('Erro ao enviar formulário:', error);
-                showNotificationAndRedirect(false, 'Erro de conexão. Por favor, tente novamente.');
-            }
+async function handleFormSubmit(form, formData, successMessage) {
+    try {
+        let formDataObj = {};
+        // Detecta qual formulário está sendo enviado e monta os campos corretos
+        if (form.id === 'formAluno') {
+            formDataObj = {
+                fullname: form.querySelector('[name="fullname"]')?.value || '',
+                emailRegister: form.querySelector('[name="emailRegister"]')?.value || '',
+                passwordRegister: form.querySelector('[name="passwordRegister"]')?.value || '',
+                passwordRegisterConfirm: form.querySelector('[name="passwordRegisterConfirm"]')?.value || '',
+                numberRegister: form.querySelector('[name="numberRegister"]')?.value || '',
+                dataNasc: form.querySelector('[name="dataNasc"]')?.value || '',
+                cep: form.querySelector('[name="cep"]')?.value || '',
+                rua: form.querySelector('[name="rua"]')?.value || '',
+                bairro: form.querySelector('[name="bairro"]')?.value || '',
+                cidade: form.querySelector('[name="cidade"]')?.value || '',
+                uf: form.querySelector('[name="uf"]')?.value || '',
+                numero: form.querySelector('[name="numero"]')?.value || '',
+                complemento: form.querySelector('[name="complemento"]')?.value || '',
+                cpfRegister: form.querySelector('[name="cpfRegister"]')?.value || '',
+                plans: form.querySelector('[name="plans"]')?.value || '',
+                numberCardRegister: form.querySelector('[name="numberCardRegister"]')?.value || '',
+                nameCardRegister: form.querySelector('[name="nameCardRegister"]')?.value || '',
+                validityDate: form.querySelector('[name="validityDate"]')?.value || '',
+                cvvValidation: form.querySelector('[name="cvvValidation"]')?.value || ''
+            };
+            console.log('Dados do formulário de aluno:', formDataObj);
+        } else if (form.id === 'formAcademia') {
+            formDataObj = {
+                nameAcademyRegister: form.querySelector('[name="nameAcademyRegister"]')?.value || '',
+                cpnjAcademyRegister: form.querySelector('[name="cpnjAcademyRegister"]')?.value || '',
+                emailAcademyRegister: form.querySelector('[name="emailAcademyRegister"]')?.value || '',
+                cellAcademyRegister: form.querySelector('[name="cellAcademyRegister"]')?.value || '',
+                passwordAcademyRegister: form.querySelector('[name="passwordAcademyRegister"]')?.value || '',
+                cepAcad: form.querySelector('[name="cepAcad"]')?.value || '',
+                ruaAcad: form.querySelector('[name="ruaAcad"]')?.value || '',
+                bairroAcad: form.querySelector('[name="bairroAcad"]')?.value || '',
+                cidadeAcad: form.querySelector('[name="cidadeAcad"]')?.value || '',
+                ufAcad: form.querySelector('[name="ufAcad"]')?.value || '',
+                numeroAcad: form.querySelector('[name="numeroAcad"]')?.value || '',
+                complementoAcad: form.querySelector('[name="complementoAcad"]')?.value || '',
+                capacityAcademyRegister: form.querySelector('[name="capacityAcademyRegister"]')?.value || '',
+                hourAcademyRegisterAb: form.querySelector('[name="hourAcademyRegisterAb"]')?.value || '',
+                hourAcademyRegisterEnc: form.querySelector('[name="hourAcademyRegisterEnc"]')?.value || '',
+                musculacao: form.querySelector('[name="musculacao"]')?.checked ? 'on' : '',
+                crossfit: form.querySelector('[name="crossfit"]')?.checked ? 'on' : '',
+                cardio: form.querySelector('[name="cardio"]')?.checked ? 'on' : ''
+            };
+        } else if (form.id === 'formProfissional') {
+            formDataObj = {
+                fullname: form.querySelector('[name="fullname"]')?.value || '',
+                emailRegister: form.querySelector('[name="emailRegister"]')?.value || '',
+                numberRegister: form.querySelector('[name="numberRegister"]')?.value || '',
+                numberDoc: form.querySelector('[name="numberDoc"]')?.value || '',
+                profession: form.querySelector('[name="profession"]')?.value || '',
+                profissionalReg: form.querySelector('[name="profissionalReg"]')?.value || '',
+                passwordRegister: form.querySelector('[name="passwordRegister"]')?.value || '',
+                passwordRegisterConfirm: form.querySelector('[name="passwordRegisterConfirm"]')?.value || ''
+            };
+            console.log('Dados do formulário de profissional:', formDataObj);
         }
 
-        // Inicialização da página
+        // Remove campos vazios
+        Object.keys(formDataObj).forEach(key => {
+            if (formDataObj[key] === '') {
+                delete formDataObj[key];
+            }
+        });
+
+        let url = form.action;
+        if (form.id === 'formAluno') {
+            url = '/aluno';
+        } else if (form.id === 'formAcademia') {
+            url = '/academia';
+        } else if (form.id === 'formProfissional') {
+            url = '/profissional';
+        }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(formDataObj).toString()
+        });
+
+        // Tenta obter a resposta como JSON, mas lida com respostas de texto também
+        let result;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            result = await response.json();
+        } else {
+            const text = await response.text();
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                result = { message: text };
+            }
+        }
+        
+        if (response.ok) {
+            showNotificationAndRedirect(true, successMessage);
+        } else {
+            showNotificationAndRedirect(false, result.message || 'Ocorreu um erro ao processar seu cadastro.');
+        }
+    } catch (error) {
+        console.error('Erro ao enviar formulário:', error);
+        showNotificationAndRedirect(false, 'Erro de conexão. Por favor, tente novamente.');
+    }
+}
+
+// Torna a função showForm disponível globalmente
+function showForm(formType) {
+    // Esconde todos os formulários
+    document.getElementById('registerAluno').style.display = 'none';
+    document.getElementById('registerAcademia').style.display = 'none';
+    document.getElementById('registerProfissional').style.display = 'none';
+
+    // Mostra o formulário selecionado
+    document.getElementById('register' + formType.charAt(0).toUpperCase() + formType.slice(1)).style.display = 'block';
+}
+
+// Inicialização da página
         document.addEventListener('DOMContentLoaded', function () {
             // Mostra apenas o formulário de aluno por padrão
             showForm('aluno');
@@ -514,7 +562,7 @@
 
         <!-- Cadastro Aluno -->
         <section class="sectMargin" id="registerAluno" style="display: none;">
-            <form action="aluno" method="post">
+            <form id="formAluno" action="aluno" method="post">
                 <section id="fullnameInput">
                     <label for="fullname" class="titleLabel">Nome completo</label>
                     <br>
@@ -613,7 +661,7 @@
                     <section>
                         <label for="cpfRegister" class="titleLabel">CPF</label>
                         <input type="text" name="cpfRegister" id="cpfRegister" placeholder="Digite seu CPF"
-                            maxlength="14" pattern="\d{3}\.?\d{3}\.?\d{3}\-?\d{2}" 
+                            maxlength="14"pattern="\d{3}[\.\-]?\d{3}[\.\-]?\d{3}[\.\-]?\d{2}" 
                             oninput="handleCPFInput(this, 'cpfError')" required>
                         <div id="cpfError" style="color: red; font-size: 12px; display: none;"></div>
                     </section>
@@ -679,7 +727,7 @@
 
         <!-- Cadastro Academia -->
         <section id="registerAcademia" style="display: none;">
-            <form action="academia" method="post">
+            <form id="formAcademia" action="academia" method="post">
                 <section class="sectMargin" id="nameAcademyInput">
                     <label for="nameAcademyRegister" class="titleLabel">Nome da academia</label>
                     <br>
@@ -845,7 +893,7 @@
 
         <!-- Cadastro Profissional -->
         <section id="registerProfissional" style="display: none;">
-            <form action="/profissional" method="post">
+            <form id="formProfissional" action="/profissional" method="post">
                 <section class="sectMargin" id="fullnameInput">
                     <label for="fullname" class="titleLabel">Nome completo</label>
                     <br>
@@ -862,13 +910,6 @@
                 </section>
 
                 <section class="sectMargin" id="numberAndCpf">
-                    <section id="sectRadio">
-                        <label for="tipoProf">Tipo de documento</label>
-                        <input type="radio" name="tipoProf" id="tipoProfCpf" value="CPF">CPF
-                        <input type="radio" name="tipoProf" id="tipoProfCnpj" value="CNPJ">CNPJ
-                    </section>
-
-                    <br>
 
                     <section class="sectMargin" id="professionRegisterInput">
                         <label for="professionRegister" class="titleLabel">Profissão</label>
@@ -912,7 +953,7 @@
                         <section>
                             <label for="numberDoc" class="titleLabel">CPF</label>
                             <input type="text" name="numberDoc" id="numberDoc" placeholder="Digite seu CPF"
-                                maxlength="14" pattern="\d{3}\.?\d{3}\.?\d{3}\-?\d{2}"
+                                maxlength="14" pattern="[0-9]{3}.?[0-9]{3}.?[0-9]{3}[\-]?[0-9]{2}"
                                 oninput="handleCPFInput(this, 'cpfProfError')" required>
                             <div id="cpfProfError" style="color: red; font-size: 12px; display: none;"></div>
                         </section>

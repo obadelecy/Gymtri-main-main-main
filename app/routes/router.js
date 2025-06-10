@@ -9,6 +9,7 @@ module.exports = function(application) {
   const agendamentosController = require("../controllers/agendamentosController");
   const buscaController = require("../controllers/buscaController");
   const profisModel = require("../models/profisModel");
+  const academiaRouter = require("./academia");
 
   const {
     verificarUsuAutenticado,
@@ -46,6 +47,9 @@ module.exports = function(application) {
   // Rota de login que usa o middleware gravarUsuAutenticado para autenticar o usuário
   // e depois chama o método logar do alunoController para renderizar a interface correta
   router.post("/loginInterface", gravarUsuAutenticado, alunoController.logar);
+
+  // Academia Routes
+  router.use('/academia', academiaRouter);
 
   // Rota para a interface do profissional
   router.get("/profissional/interface", verificarUsuAutenticado, (req, res) => {

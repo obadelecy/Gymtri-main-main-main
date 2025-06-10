@@ -11,21 +11,24 @@ const verificarUsuAutenticado = (req, res, next) => {
     console.log('Método:', req.method);
     console.log('Sessão completa:', JSON.stringify(req.session, null, 2));
     
-    if (req.session.autenticado) {
+    // Check if session exists and has authentication data
+    if (req.session && req.session.autenticado && req.session.autenticado.id) {
         console.log('Usuário autenticado:', JSON.stringify(req.session.autenticado, null, 2));
-        var autenticado = req.session.autenticado;
-        req.session.logado = (req.session.logado || 0) + 1;
-        console.log('Contador de logins:', req.session.logado);
-    } else {
-        console.log('Usuário NÃO autenticado');
-        var autenticado = { autenticado: null, id: null, tipo: null };
-        req.session.logado = 0;
+        // Update last activity timestamp
+        req.session.lastActivity = Date.now();
+        // Ensure autenticado object has required properties
+        req.session.autenticado = {
+            ...req.session.autenticado,
+            autenticado: true
+        };
+        console.log('Sessão atualizada:', JSON.stringify(req.session.autenticado, null, 2));
+        return next();
     }
     
-    req.session.autenticado = autenticado;
-    console.log('Dados da sessão após verificação:', JSON.stringify(req.session, null, 2));
-    console.log('=== FIM MIDDLEWARE verificarUsuAutenticado ===');
-    next();
+    console.log('Usuário NÃO autenticado - Redirecionando para /login');
+    // Store the original URL for redirect after login
+    req.session.returnTo = req.originalUrl;
+    return res.redirect('/login');
 };
 
 limparSessao = (req, res, next) => {
