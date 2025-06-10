@@ -4,7 +4,7 @@ const { verificarUsuAutenticado } = require("../models/autenticador_middleware")
 
 // Middleware to verify if user is an academia
 const isAcademia = (req, res, next) => {
-    if (req.session.autenticado && req.session.tipo === 'academia') {
+    if (req.session.autenticado && req.session.autenticado.tipo === 'academia') {
         return next();
     }
     res.redirect('/login');

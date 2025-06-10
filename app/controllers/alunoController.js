@@ -173,24 +173,63 @@ const alunoController = {
   ],
 
   logar: (req, res) => {
+    console.log('=== alunoController.logar ===');
+    console.log('Session data:', req.session.autenticado);
+    
     const erros = validationResult(req);
     if (!erros.isEmpty()) {
-      return res.render("pages/login", { listaErros: erros, dadosNotificacao: null });
+      console.log('Validation errors:', erros.array());
+      return res.render("pages/login", { 
+        listaErros: erros, 
+        dadosNotificacao: null 
+      });
     }
     
-    if (req.session.autenticado && req.session.autenticado.autenticado != null) {
+    if (req.session.autenticado && req.session.autenticado.autenticado === true) {
       // Redireciona para a rota correta com base no tipo de usuário
       const tipo = req.session.autenticado.tipo;
+      console.log(`Redirecionando usuário do tipo: ${tipo}`);
       
-      if (tipo === 'aluno') {
-        return res.redirect('/interfaceUsuario');
-      } else if (tipo === 'academia') {
-        return res.redirect('/academia/interface');
-      } else if (tipo === 'profissional') {
-        return res.redirect('/profissional/interface');
+      let redirectUrl = '/login';
+      
+      switch(tipo) {
+        case 'aluno':
+          redirectUrl = '/interfaceUsuario';
+          break;
+        case 'academia':
+          redirectUrl = '/academia/interface';
+          break;
+        case 'profissional':
+          redirectUrl = '/profissional/interface';
+          break;
+        default:
+          console.log('Tipo de usuário desconhecido:', tipo);
+          return res.render("pages/login", {
+            listaErros: null,
+            dadosNotificacao: { 
+              titulo: "Erro!", 
+              mensagem: "Tipo de usuário não suportado.", 
+              tipo: "error" 
+            }
+          });
       }
+      
+      console.log(`Redirecionando para: ${redirectUrl}`);
+      
+      // Força o salvamento da sessão antes do redirecionamento
+      req.session.save(function(err) {
+        if (err) {
+          console.error('Erro ao salvar a sessão:', err);
+          return res.redirect('/login');
+        }
+        // Usa res.redirect com status 302 para garantir o redirecionamento
+        res.status(302).location(redirectUrl).end();
+      });
+      
+      return;
     }
     
+    console.log('Falha na autenticação - sessão inválida ou usuário não autenticado');
     // Se chegou até aqui, houve algum erro na autenticação
     res.render("pages/login", {
       listaErros: null,

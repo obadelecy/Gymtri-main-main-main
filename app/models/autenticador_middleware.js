@@ -79,28 +79,45 @@ gravarUsuAutenticado = async (req, res, next) => {
                     // Define os dados do usuário na sessão com base no tipo
                     if (tipoUsuario === 'aluno') {
                         autenticado = {
-                            autenticado: usuario.NOME_COMPLETO,
+                            autenticado: true,
+                            nome: usuario.NOME_COMPLETO,
                             id: usuario.CPF,
                             tipo: 'aluno',
                             email: usuario.EMAIL
                         };
                     } else if (tipoUsuario === 'academia') {
                         autenticado = {
-                            autenticado: usuario.nome, // Usa o nome da academia
-                            id: usuario.id, // Usa CNPJ como ID (retornado como id na consulta)
+                            autenticado: true,
+                            nome: usuario.nome || 'Academia',
+                            id: usuario.id, // CNPJ
                             tipo: 'academia',
                             email: usuario.EMAIL
                         };
                     } else if (tipoUsuario === 'profissional') {
                         autenticado = {
-                            autenticado: usuario.NOME, // Nome do profissional
-                            id: usuario.NUMERO_DOC, // Usa NUMERO_DOC como ID
+                            autenticado: true,
+                            nome: usuario.NOME,
+                            id: usuario.NUMERO_DOC,
                             tipo: 'profissional',
                             email: usuario.EMAIL
                         };
                     }
                     
                     console.log('Usuário autenticado com sucesso:', autenticado);
+                    
+                    // Salva a sessão antes de continuar
+                    req.session.autenticado = autenticado;
+                    req.session.logado = 1;
+                    
+                    // Salva a sessão e continua para o próximo middleware
+                    req.session.save(function(err) {
+                        if (err) {
+                            console.error('Erro ao salvar a sessão:', err);
+                            return next(err);
+                        }
+                        next();
+                    });
+                    return; // Importante: não continuar a execução
                 } else {
                     console.log('Senha inválida para o usuário:', usuario.EMAIL);
                 }
@@ -114,13 +131,14 @@ gravarUsuAutenticado = async (req, res, next) => {
                 code: erro.code,
                 sqlMessage: erro.sqlMessage
             });
+            return next(erro);
         }
     } else {
         console.log('Erros de validação no formulário:', erros.array());
     }
     
-    // Define os dados de autenticação na sessão
-    req.session.autenticado = autenticado;
+    // Se chegou até aqui, a autenticação falhou
+    req.session.autenticado = { autenticado: false };
     req.session.logado = 0;
     next();
 };

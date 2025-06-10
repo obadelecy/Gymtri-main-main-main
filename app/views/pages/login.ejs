@@ -53,14 +53,13 @@
         <!-- FORMULÁRIO DE LOGIN -->
         <form method="POST" action="/loginInterface" id="loginInterface">
             <section id="chooseUser">
-                <button class="btnChoose" data-user="interfaceUsuario" type="button">Aluno</button>
-                <button class="btnChoose" data-user="interfaceAcademia" type="button">Academia</button>
-                <button class="btnChoose" data-user="interfaceProfissional" type="button">Profissional</button>
+                <button type="button" class="btnChoose" data-user="interfaceUsuario">Aluno</button>
+                <button type="button" class="btnChoose" data-user="interfaceAcademia">Academia</button>
+                <button type="button" class="btnChoose" data-user="interfaceProfissional">Profissional</button>
             </section>
 
-            <input type="hidden" name="tipo" id="userType">
+            <input type="hidden" name="tipo" id="userType" required>
             
-
             <section id="emailInput">
                 <label for="email" class="titleLabel">E-mail ou nome de usuário</label>
                 <br>
