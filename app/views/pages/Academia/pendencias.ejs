@@ -4,10 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendências</title>
-    <link rel="stylesheet" href="/public/css/styleInterface.css">
+    <link rel="stylesheet" href="/css/styleInterface.css">
 </head>
 <body>
-    <%- include('partials/header') %>
+    <header>
+      <a href="/academia/interface"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+      <nav id="menu">
+        <ul>
+          <li><a href="/academia/buscar-profissional" class="navConfig">Profissionais</a></li>
+          <li><a href="/academia/gerar-aula" class="navConfig">Gerar aula</a></li>
+          <li><a href="/produtos" class="navConfig">Produtos</a></li>
+          <li><a href="/academia/editar-dados" class="navConfig">Editar dados</a></li>
+          <li><a href="/" class="navConfig">Sair</a></li>
+        </ul>
+      </nav>
+    </header>
 
     <main>
         <section class="title">
@@ -23,28 +34,24 @@
         </form>
 
         <section id="blockConsultUser" class="consult">
-            <% pendencias.forEach(function(pendencia) { %>
-                <section class="itemConsult">
-                    <h4><%= pendencia.tipo %></h4>
-                    <p><span>Nome(a):</span> <%= pendencia.nome %></p>
-                    <p><span>Plano:</span> <%= pendencia.plano %></p>
-                    <p><span>Situação:</span> <%= pendencia.situacao %></p>
-                    <p><span>Pendências:</span> <%= pendencia.descricao %></p>
-                    <p><span>Data:</span> <%= pendencia.data %></p>
-                    <p><span>Horário:</span> <%= pendencia.horario %></p>
+            <section class="itemConsult">
+                <h4>Tipo de Pendência</h4>
+                <p><span>Nome(a):</span> Nome do Aluno</p>
+                <p><span>Plano:</span> Nome do Plano</p>
+                <p><span>Situação:</span> Pendente</p>
+                <p><span>Pendências:</span> Descrição da pendência</p>
+                <p><span>Data:</span> 10/06/2025</p>
+                <p><span>Horário:</span> 10:00</p>
 
-                    <section id="btnConsult">
-                        <button class="btnConfig">Visualizar perfil</button>
-                        <button class="btnConfig" type="button">Editar</button>
-                    </section>
+                <section id="btnConsult">
+                    <button class="btnConfig">Visualizar perfil</button>
+                    <button class="btnConfig" type="button">Editar</button>
                 </section>
-            <% }) %>
+            </section>
 
-            <% if(pendencias.length === 0) { %>
-                <section class="notConsult">
-                    <h4>Não há mais agendamentos.</h4>
-                </section>
-            <% } %>
+            <section class="notConsult">
+                <h4>Não há mais agendamentos.</h4>
+            </section>
         </section>
     </main>
 </body>

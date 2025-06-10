@@ -7,7 +7,18 @@
   <link rel="stylesheet" href="/css/styleInterface.css">
 </head>
 <body>
-  <%- include('../partials/header') %>
+  <header>
+    <a href="/academia/interface"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+    <nav id="menu">
+      <ul>
+        <li><a href="/academia/buscar-profissional" class="navConfig">Profissionais</a></li>
+        <li><a href="/academia/gerar-aula" class="navConfig">Gerar aula</a></li>
+        <li><a href="/produtos" class="navConfig">Produtos</a></li>
+        <li><a href="/academia/editar-dados" class="navConfig">Editar dados</a></li>
+        <li><a href="/" class="navConfig">Sair</a></li>
+      </ul>
+    </nav>
+  </header>
 
   <main>
     <section class="title">
@@ -15,25 +26,21 @@
     </section>
 
     <section id="blockConsultUser" class="consult">
-      <% agendamentos.forEach(ag => { %>
-        <section class="itemConsult">
-          <h4><%= ag.tipo %></h4>
-          <p><span>Nome(a):</span> <%= ag.nome %></p>
-          <p><span>Plano:</span> <%= ag.plano %></p>
-          <p><span>Situação:</span> <%= ag.situacao %></p>
-          <p><span>Data:</span> <%= ag.data %></p>
-          <p><span>Horário:</span> <%= ag.horario %></p>
-          <section id="btnConsult">
-            <button class="btnConfig">Visualizar perfil</button>
-            <button class="btnConfig" type="button">Cancelar agendamento</button>
-          </section>
+      <section class="itemConsult">
+        <h4>Tipo de Aula</h4>
+        <p><span>Nome(a):</span> Nome do Aluno</p>
+        <p><span>Plano:</span> Nome do Plano</p>
+        <p><span>Situação:</span> Ativo</p>
+        <p><span>Data:</span> 10/06/2025</p>
+        <p><span>Horário:</span> 10:00</p>
+        <section id="btnConsult">
+          <button class="btnConfig">Visualizar perfil</button>
+          <button class="btnConfig" type="button">Cancelar agendamento</button>
         </section>
-      <% }) %>
-      <% if (!agendamentos.length) { %>
-        <section class="notConsult">
-          <h4>Não há mais agendamentos.</h4>
-        </section>
-      <% } %>
+      </section>
+      <section class="notConsult">
+        <h4>Não há mais agendamentos.</h4>
+      </section>
     </section>
   </main>
 </body>

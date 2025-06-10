@@ -4,10 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Treinos e aulas</title>
-    <link rel="stylesheet" href="/public/css/styleInterface.css">
+    <link rel="stylesheet" href="/css/styleInterface.css">
 </head>
 <body>
-    <%- include('partials/header') %>
+    <header>
+      <a href="/academia/interface"><img src="/img/logoPng3.png" alt="Logo Gymtri" width="80px"></a>
+      <nav id="menu">
+        <ul>
+          <li><a href="/academia/buscar-profissional" class="navConfig">Profissionais</a></li>
+          <li><a href="/academia/gerar-aula" class="navConfig">Gerar aula</a></li>
+          <li><a href="/produtos" class="navConfig">Produtos</a></li>
+          <li><a href="/academia/editar-dados" class="navConfig">Editar dados</a></li>
+          <li><a href="/" class="navConfig">Sair</a></li>
+        </ul>
+      </nav>
+    </header>
 
     <main>
         <section class="title">
@@ -15,26 +26,22 @@
         </section>
 
         <section id="blockConsultUser" class="consult">
-            <% treinos.forEach(function(treino) { %>
-                <section class="itemConsult">
-                    <h4><%= treino.nome %></h4>
-                    <p><span>Profissional(a):</span> <%= treino.profissional %></p>
-                    <p><span>Situação:</span> <%= treino.situacao %></p>
-                    <p><span>Data:</span> <%= treino.data %></p>
-                    <p><span>Horário:</span> <%= treino.horario %></p>
+            <section class="itemConsult">
+                <h4>Nome do Treino/Aula</h4>
+                <p><span>Profissional(a):</span> Nome do Profissional</p>
+                <p><span>Situação:</span> Ativo</p>
+                <p><span>Data:</span> 10/06/2025</p>
+                <p><span>Horário:</span> 10:00</p>
 
-                    <section id="btnConsult">
-                        <button class="btnConfig">Agendar aluno</button>
-                        <button class="btnConfig">Remover aluno</button>
-                    </section>
+                <section id="btnConsult">
+                    <button class="btnConfig">Agendar aluno</button>
+                    <button class="btnConfig">Remover aluno</button>
                 </section>
-            <% }) %>
+            </section>
 
-            <% if(treinos.length === 0) { %>
-                <section class="notConsult">
-                    <h4>Não há mais atividades.</h4>
-                </section>
-            <% } %>
+            <section class="notConsult">
+                <h4>Não há mais atividades.</h4>
+            </section>
         </section>
     </main>
 </body>
